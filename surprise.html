@@ -3,529 +3,964 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROJECT: ETERNITY // TOP SECRET</title>
+    <title>PROJECT ETERNITY // OMEGA RESTRICTED VAULT</title>
+    <!-- Google Fonts & Confetti Library -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&family=Cinzel:wght@600;800;900&family=Playfair+Display:ital,wght@0,600;1,400;1,600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
     <style>
         :root {
-            --bg-dark: #050508;
-            --panel-bg: rgba(13, 13, 20, 0.85);
-            --border-line: rgba(255, 42, 95, 0.3);
-            --accent-red: #ff2a5f;
-            --accent-purple: #8a2be2;
-            --accent-cyan: #00f0ff;
-            --text-primary: #f0f0f5;
-            --text-secondary: #a0a0b5;
-            --glow-red: rgba(255, 42, 95, 0.6);
-            --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            --font-code: 'Courier New', Courier, monospace;
+            --bg-deep: #030305;
+            --panel-bg: rgba(10, 10, 16, 0.85);
+            --border-glow: rgba(255, 42, 109, 0.45);
+            --pink-accent: #ff2a6d;
+            --cyan-accent: #05d9e8;
+            --purple-accent: #bf5af2;
+            --gold-accent: #ffd700;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --crimson: #990000;
+            --success-green: #00ff88;
         }
 
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
             user-select: none;
-            font-family: var(--font-main);
+            font-family: 'Fira Code', monospace;
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
+            background-color: var(--bg-deep);
+            color: var(--text-main);
             min-height: 100vh;
+            overflow-x: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow-x: hidden;
             position: relative;
+            padding: 10px;
         }
 
-        #bgCanvas {
+        /* Matrix Rain Background Canvas */
+        #bg-canvas {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .ambient-orb {
-            position: fixed;
-            width: 450px;
-            height: 450px;
-            border-radius: 50%;
-            filter: blur(140px);
+            width: 100%;
+            height: 100%;
             z-index: 1;
             pointer-events: none;
-            opacity: 0.6;
+            opacity: 0.35;
         }
 
-        .orb-1 { top: -10%; left: -10%; background: var(--accent-red); }
-        .orb-2 { bottom: -10%; right: -10%; background: var(--accent-purple); }
-
-        .window-container {
+        /* Main Container Framework */
+        .vault-wrapper {
             position: relative;
             z-index: 10;
-            width: 92%;
-            max-width: 580px;
+            width: 95%;
+            max-width: 1250px;
+            min-height: 90vh;
             background: var(--panel-bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--border-line);
-            border-radius: 20px;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 42, 95, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glow);
+            border-radius: 18px;
+            box-shadow: 0 0 60px rgba(255, 42, 109, 0.2), inset 0 0 25px rgba(5, 217, 232, 0.08);
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
-            animation: containerAppear 0.8s ease-out;
+            margin: 15px 0;
         }
 
-        @keyframes containerAppear {
-            from { opacity: 0; transform: scale(0.95) translateY(20px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        .window-header {
-            background: rgba(5, 5, 8, 0.8);
-            padding: 12px 20px;
-            border-bottom: 1px solid var(--border-line);
+        /* Top Header Navigation Bar */
+        .system-header {
+            padding: 16px 25px;
+            border-bottom: 1px solid rgba(255, 42, 109, 0.25);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: rgba(4, 4, 8, 0.85);
         }
 
-        .window-title {
-            font-family: var(--font-code);
-            font-size: 0.75rem;
-            color: var(--accent-cyan);
-            letter-spacing: 2px;
+        .header-title {
+            font-size: 0.85rem;
+            letter-spacing: 2.5px;
+            color: var(--pink-accent);
             text-transform: uppercase;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            font-weight: 700;
         }
 
         .status-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--accent-red);
+            width: 10px;
+            height: 10px;
+            background-color: var(--pink-accent);
             border-radius: 50%;
-            box-shadow: 0 0 8px var(--accent-red);
-            animation: pulseDot 1.5s infinite alternate;
+            box-shadow: 0 0 12px var(--pink-accent);
+            animation: pulseGlow 1.5s infinite;
         }
 
-        @keyframes pulseDot {
-            from { opacity: 0.4; }
-            to { opacity: 1; }
+        @keyframes pulseGlow {
+            0% { opacity: 0.3; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 0.3; transform: scale(0.9); }
         }
 
-        .window-body {
-            padding: 28px;
-            min-height: 420px;
+        .header-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .audio-btn {
+            background: transparent;
+            border: 1px solid var(--cyan-accent);
+            color: var(--cyan-accent);
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .audio-btn:hover {
+            background: var(--cyan-accent);
+            color: #000;
+            box-shadow: 0 0 15px var(--cyan-accent);
+        }
+
+        /* Lock Screen View */
+        #lock-screen {
+            flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: center;
+            padding: 50px 20px;
+            text-align: center;
         }
 
-        .hidden { display: none !important; }
-        .text-accent { color: var(--accent-red); }
-        .text-cyan { color: var(--accent-cyan); }
-        .glow-text { text-shadow: 0 0 10px var(--glow-red); }
-
-        /* Lock Screen */
-        .lock-wrapper { text-align: center; }
-        .lock-icon-container {
-            width: 70px;
-            height: 70px;
-            margin: 0 auto 20px auto;
-            border: 2px solid var(--accent-red);
+        .vault-avatar {
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
+            border: 2px solid var(--pink-accent);
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 0 25px var(--glow-red);
-            animation: floatLock 3s ease-in-out infinite;
+            font-size: 2.5rem;
+            margin-bottom: 25px;
+            box-shadow: 0 0 30px rgba(255, 42, 109, 0.4);
+            background: rgba(255, 42, 109, 0.08);
         }
 
-        @keyframes floatLock {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-
-        .lock-title { font-size: 1.5rem; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 8px; }
-        .lock-subtitle { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 25px; line-height: 1.4; }
-
-        .input-group { position: relative; max-width: 320px; margin: 0 auto 15px auto; }
-        .secret-input {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid var(--border-line);
-            border-radius: 12px;
-            padding: 14px 18px;
+        .lock-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
             color: #fff;
-            font-size: 1rem;
-            text-align: center;
-            letter-spacing: 2px;
-            outline: none;
-            transition: 0.3s;
+            letter-spacing: 5px;
+            margin-bottom: 12px;
         }
 
-        .secret-input:focus {
-            border-color: var(--accent-cyan);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+        .lock-subtitle {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            margin-bottom: 35px;
+            max-width: 550px;
+            line-height: 1.7;
         }
 
-        .btn-action {
-            width: 100%;
-            max-width: 320px;
-            background: linear-gradient(135deg, var(--accent-red), #b0003a);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 8px 25px var(--glow-red);
-            margin: 0 auto;
-            display: block;
-        }
-
-        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 12px 30px var(--glow-red); }
-
-        /* Navigation Bar */
-        .app-nav {
+        .passcode-container {
             display: flex;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--border-line);
-            border-radius: 12px;
-            padding: 4px;
-            margin-bottom: 22px;
-            gap: 4px;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 350px;
         }
 
-        .nav-btn {
-            flex: 1;
-            padding: 10px 4px;
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            background: none;
+        .passcode-input {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--border-glow);
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: #fff;
+            text-align: center;
+            font-size: 1.15rem;
+            letter-spacing: 4px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .passcode-input:focus {
+            border-color: var(--cyan-accent);
+            box-shadow: 0 0 20px rgba(5, 217, 232, 0.4);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--pink-accent), var(--crimson));
+            color: #fff;
             border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(255, 42, 109, 0.4);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(255, 42, 109, 0.7);
+        }
+
+        .hint-text {
+            margin-top: 18px;
+            font-size: 0.78rem;
+            color: var(--cyan-accent);
+            opacity: 0.85;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* Unlocked Dashboard Layout */
+        #dashboard {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* Tab Navigation Header */
+        .vault-tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255, 42, 109, 0.25);
+            background: rgba(0, 0, 0, 0.5);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .vault-tabs::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            padding: 16px 22px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.82rem;
+            letter-spacing: 1.5px;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 42, 109, 0.08);
+        }
+
+        .tab-btn.active {
+            color: var(--pink-accent);
+            border-bottom-color: var(--pink-accent);
+            background: rgba(255, 42, 109, 0.12);
+        }
+
+        /* Content Panels */
+        .content-panel {
+            flex: 1;
+            padding: 35px;
+            overflow-y: auto;
+            display: none;
+            max-height: 72vh;
+        }
+
+        .content-panel.active {
+            display: block;
+            animation: fadeInPanel 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeInPanel {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Section Headings */
+        .section-heading {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: var(--pink-accent);
+            margin-bottom: 22px;
+            letter-spacing: 2.5px;
+            border-left: 4px solid var(--pink-accent);
+            padding-left: 15px;
+        }
+
+        .sub-heading {
+            font-size: 1rem;
+            color: var(--cyan-accent);
+            margin: 25px 0 15px 0;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        /* Cards & Frameworks */
+        .letter-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 30px;
+            line-height: 1.95;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: #e2e8f0;
+            margin-bottom: 25px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 22px;
+            margin-top: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 18px;
+            margin-top: 20px;
+        }
+
+        .interactive-card {
+            background: rgba(15, 15, 25, 0.7);
+            border: 1px solid rgba(5, 217, 232, 0.25);
+            padding: 24px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .interactive-card:hover {
+            border-color: var(--cyan-accent);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(5, 217, 232, 0.2);
+        }
+
+        .quote-card {
+            background: rgba(20, 10, 25, 0.75);
+            border: 1px solid rgba(255, 42, 109, 0.3);
+            padding: 22px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .quote-card:hover {
+            border-color: var(--pink-accent);
+            box-shadow: 0 0 20px rgba(255, 42, 109, 0.25);
+        }
+
+        .quote-text {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.05rem;
+            color: #f1f5f9;
+            line-height: 1.7;
+        }
+
+        .quote-tag {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 0.72rem;
+            color: var(--gold-accent);
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .roast-card {
+            background: rgba(25, 20, 10, 0.75);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .roast-title {
+            color: var(--gold-accent);
+            font-weight: bold;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .card-title {
+            color: var(--cyan-accent);
+            margin-bottom: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        /* Meter Animation */
+        .meter-container {
+            width: 100%;
+            height: 12px;
+            background: #111;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 18px 0;
+            border: 1px solid #222;
+        }
+
+        .meter-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--cyan-accent), var(--pink-accent), var(--gold-accent));
+            transition: width 2s cubic-bezier(0.1, 1, 0.1, 1);
+        }
+
+        .option-btn {
+            width: 100%;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-main);
+            padding: 14px 18px;
+            margin: 8px 0;
             border-radius: 8px;
             cursor: pointer;
-            transition: 0.3s;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .nav-btn.active {
-            background: var(--accent-red);
-            color: white;
-            box-shadow: 0 4px 15px var(--glow-red);
-        }
-
-        .card-panel {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            padding: 20px;
-            margin-bottom: 18px;
-        }
-
-        /* Apology Box Special Styling */
-        .apology-box {
-            background: linear-gradient(145deg, rgba(255, 42, 95, 0.1), rgba(138, 43, 226, 0.1));
-            border: 1px solid var(--accent-red);
-            border-radius: 14px;
-            padding: 18px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .quiz-opt-btn {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: var(--text-primary);
-            padding: 12px 16px;
-            border-radius: 10px;
-            text-align: left;
+            transition: all 0.25s;
             font-size: 0.88rem;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-bottom: 10px;
         }
 
-        .quiz-opt-btn:hover {
-            background: rgba(255, 42, 95, 0.15);
-            border-color: var(--accent-red);
+        .option-btn:hover {
+            background: rgba(255, 42, 109, 0.2);
+            border-color: var(--pink-accent);
+            color: #fff;
+            transform: translateX(5px);
         }
 
-        .mood-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+        .confess-box {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
-        .mood-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 14px;
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.3s;
+        textarea.custom-note {
+            width: 100%;
+            height: 140px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-glow);
+            border-radius: 10px;
+            padding: 18px;
+            color: #fff;
+            resize: none;
+            outline: none;
+            font-size: 0.95rem;
         }
 
-        .mood-card:hover {
-            border-color: var(--accent-cyan);
-            background: rgba(0, 240, 255, 0.08);
+        textarea.custom-note:focus {
+            border-color: var(--pink-accent);
+            box-shadow: 0 0 15px rgba(255, 42, 109, 0.3);
         }
 
-        .timeline-item {
-            border-left: 2px solid var(--accent-red);
-            padding-left: 15px;
-            margin-bottom: 15px;
+        /* Terminal Logs Display */
+        .terminal-log {
+            background: #000;
+            border: 1px solid #1e1e2d;
+            border-radius: 8px;
+            padding: 18px;
+            font-size: 0.8rem;
+            color: #00ff88;
+            max-height: 180px;
+            overflow-y: auto;
+            margin-top: 15px;
+            line-height: 1.6;
+        }
+
+        .log-line {
+            margin-bottom: 6px;
+            opacity: 0.9;
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+        ::-webkit-scrollbar-thumb { background: var(--border-glow); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--pink-accent); }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .vault-wrapper { width: 98%; min-height: 92vh; }
+            .lock-title { font-size: 1.8rem; }
+            .content-panel { padding: 20px; }
+            .tab-btn { padding: 12px 14px; font-size: 0.75rem; }
+            .letter-card { padding: 20px; font-size: 1rem; }
         }
     </style>
 </head>
 <body>
 
-    <canvas id="bgCanvas"></canvas>
-    <div class="ambient-orb orb-1"></div>
-    <div class="ambient-orb orb-2"></div>
+    <!-- Dynamic Background Canvas -->
+    <canvas id="bg-canvas"></canvas>
 
-    <div class="window-container">
-        
-        <div class="window-header">
-            <div class="window-title">
+    <div class="vault-wrapper">
+        <!-- System Top Bar -->
+        <div class="system-header">
+            <div class="header-title">
                 <div class="status-dot"></div>
-                <span>SYSTEM://VAULT.PRANAVI.EXE</span>
+                SYSTEM://VAULT.PRANAVI.EXE [v4.0.9]
+            </div>
+            <div class="header-controls">
+                <button class="audio-btn" id="audioToggle" onclick="toggleAudio()">🔊 AUDIO: OFF</button>
             </div>
         </div>
 
-        <div class="window-body">
+        <!-- LOCK SCREEN MODULE -->
+        <div id="lock-screen">
+            <div class="vault-avatar">🥷</div>
+            <h1 class="lock-title">RESTRICTED CYBER VAULT</h1>
+            <p class="lock-subtitle">
+                This encrypted environment was engineered exclusively for the girl who spent two days waiting while I was quietly building something special 😼. Enter keycode to override system security.
+            </p>
+            <div class="passcode-container">
+                <input type="password" id="passInput" class="passcode-input" placeholder="ENTER PASSCODE" autocomplete="off">
+                <button class="btn-submit" onclick="unlockVault()">ACCESS TERMINAL 🖤</button>
+            </div>
+            <span class="hint-text" onclick="showHint()">Need a hint? (Click Here)</span>
+        </div>
 
-            <!-- LOCK SCREEN -->
-            <div id="lockScreen" class="lock-wrapper">
-                <div class="lock-icon-container">
-                    <span style="font-size: 1.8rem;">🥷</span>
-                </div>
-                <h2 class="lock-title glow-text">SECRET VAULT</h2>
-                <p class="lock-subtitle">Access only for the girl who keeps grinning in class for no reason 😏</p>
-                
-                <div class="input-group">
-                    <input type="password" id="passInput" class="secret-input" placeholder="ENTER KEYCODE" autocomplete="off">
-                </div>
-                <button class="btn-action" onclick="attemptUnlock()">ACCESS VAULT 🖤</button>
+        <!-- MAIN UNLOCKED DASHBOARD -->
+        <div id="dashboard">
+            <!-- Navigation Tabs (7 Pages) -->
+            <div class="vault-tabs">
+                <button class="tab-btn active" onclick="switchTab('letter')">📜 // MEMORANDUM</button>
+                <button class="tab-btn" onclick="switchTab('quotes')">🖤 // QUOTES VAULT</button>
+                <button class="tab-btn" onclick="switchTab('roasts')">🎭 // JOKES & ROASTS</button>
+                <button class="tab-btn" onclick="switchTab('dossier')">🗂️ // DOSSIER</button>
+                <button class="tab-btn" onclick="switchTab('games')">🎮 // PROTOCOLS</button>
+                <button class="tab-btn" onclick="switchTab('notes')">💬 // TRANSMIT</button>
+                <button class="tab-btn" onclick="switchTab('credits')">⚡ // CREDITS</button>
             </div>
 
-            <!-- MAIN DASHBOARD -->
-            <div id="mainDashboard" class="hidden">
+            <!-- PAGE 1: CONFESSION MEMORANDUM -->
+            <div id="tab-letter" class="content-panel active">
+                <h2 class="section-heading">SECRET MEMORANDUM // UNLOCKED</h2>
                 
-                <div class="app-nav">
-                    <button class="nav-btn active" onclick="switchTab('sorry')">For You 🥺</button>
-                    <button class="nav-btn" onclick="switchTab('quiz')">Quiz</button>
-                    <button class="nav-btn" onclick="switchTab('mood')">Mood</button>
-                    <button class="nav-btn" onclick="switchTab('rap')">Dark Rap</button>
-                    <button class="nav-btn" onclick="switchTab('vault')">Logs</button>
+                <div class="letter-card">
+                    <p style="margin-bottom: 18px;">Hey Pranavi,</p>
+                    <p style="margin-bottom: 18px;">
+                        First off, I know you waited two full days for this. But I promise you, I wasn’t just wasting time—I was spending every hour building a dedicated, multi-layered cyber vault completely custom-coded for you from scratch.
+                    </p>
+                    <p style="margin-bottom: 18px;">
+                        Regular text messages or simple Instagram DMs felt way too effortless for someone as chaotic, clever, and bright as you. So I decided to build a dark-themed cyber terminal that lives permanently on the internet, built exclusively around your frequency.
+                    </p>
+                    <p style="margin-bottom: 18px;">
+                        From your suppressed laughs in class to those random sarcastic side-eyes, you've somehow become the most interesting part of my day. Take your time, explore every tab, read through the quotes, check out the roasts, and unlock every secret protocol built into this vault.
+                    </p>
+                    <p>
+                        No algorithms, no ads, no external noise. Just a private cyber vault running strictly in dark mode. 🥷🖤
+                    </p>
                 </div>
 
-                <!-- TAB 0: SINCERE APOLOGY & WAIT DEDICATION -->
-                <div id="tabSorry" class="tab-panel">
-                    <div class="apology-box">
-                        <h3 class="text-accent glow-text" style="margin-bottom: 8px;">So Sorry For The Wait! 🖤</h3>
-                        <p style="font-size: 0.88rem; line-height: 1.6; color: #f0f0f5;">
-                            Network glitched, servers blocked, but I refused to give you anything less than absolute perfection. Thank you for being so patient with me!
+                <div class="interactive-card">
+                    <div class="card-title">⚡ REAL-TIME AURA SYNC METRICS</div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Calibrating psychic connection & sarcastic frequency levels...</p>
+                    <div class="meter-container">
+                        <div class="meter-fill" id="loveMeter"></div>
+                    </div>
+                    <button class="btn-submit" onclick="runAnalysis()" style="width: 100%;">RUN SYNC CALIBRATION (100% Guaranteed)</button>
+                </div>
+            </div>
+
+            <!-- PAGE 2: DARK ROMANCE & CYBER LOVE QUOTES VAULT -->
+            <div id="tab-quotes" class="content-panel">
+                <h2 class="section-heading">CYBER LOVE & DARK ROMANCE VAULT</h2>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 25px;">
+                    A curated archive of dark-aesthetic thoughts, cyber romance quotes, and secret notes:
+                </p>
+
+                <div class="quote-card">
+                    <p class="quote-text">"You aren't just a thought in my head; you're the main process consuming 99% of my CPU."</p>
+                    <span class="quote-tag">[ARCHIVE // CODE 01]</span>
+                </div>
+
+                <div class="quote-card">
+                    <p class="quote-text">"In a world full of noise, algorithms, and temporary people, your smile is the only signal I never want to filter out."</p>
+                    <span class="quote-tag">[ARCHIVE // CODE 02]</span>
+                </div>
+
+                <div class="quote-card">
+                    <p class="quote-text">"I didn't just build a website; I built a permanent digital monument so you know you're always on my mind."</p>
+                    <span class="quote-tag">[ARCHIVE // CODE 03]</span>
+                </div>
+
+                <div class="quote-card">
+                    <p class="quote-text">"You have this annoying habit of looking cute even when you're trying to act completely serious."</p>
+                    <span class="quote-tag">[ARCHIVE // CODE 04]</span>
+                </div>
+
+                <div class="quote-card">
+                    <p class="quote-text">"If loving your chaos was a bug, I'd disable the debugger and let the code run forever."</p>
+                    <span class="quote-tag">[ARCHIVE // CODE 05]</span>
+                </div>
+
+                <div class="interactive-card" style="margin-top: 25px;">
+                    <div class="card-title">🔓 UNLOCK RANDOM SECRET QUOTE</div>
+                    <p id="randomQuoteBox" style="font-style: italic; color: var(--gold-accent); margin: 15px 0; min-height: 40px;">
+                        Click the button below to generate a secret encrypted quote...
+                    </p>
+                    <button class="audio-btn" onclick="generateSecretQuote()" style="width: 100%;">GENERATE SECRET QUOTE 🎲</button>
+                </div>
+            </div>
+
+            <!-- PAGE 3: JOKES & CLASSROOM ROASTS -->
+            <div id="tab-roasts" class="content-panel">
+                <h2 class="section-heading">CLASSROOM JOKES & ROAST ARCHIVE</h2>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 25px;">
+                    A collection of inside jokes, classroom observations, and harmless banter reserved strictly for Pranavi:
+                </p>
+
+                <div class="roast-card">
+                    <div class="roast-title">ROAST #01: The Unprovoked Laugher</div>
+                    <p style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.6;">
+                        Pranavi sitting in class during the most serious lecture, suddenly giggling for no reason at all while everyone else looks confused. 😼
+                    </p>
+                </div>
+
+                <div class="roast-card">
+                    <div class="roast-title">ROAST #02: The Sarcasm Masterclass</div>
+                    <p style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.6;">
+                        Asking Pranavi a simple question and receiving a response so sarcastic that even Google search couldn't compute it.
+                    </p>
+                </div>
+
+                <div class="roast-card">
+                    <div class="roast-title">ROAST #03: The 2-Day Wait Scandal</div>
+                    <p style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.6;">
+                        Pranavi waiting 48 hours wondering: "Is he ghosting me or coding?" Answer: He was writing 1000 lines of CSS and JavaScript just to make you smile. 🥷
+                    </p>
+                </div>
+
+                <div class="roast-card">
+                    <div class="roast-title">ROAST #04: Distraction Potential</div>
+                    <p style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.6;">
+                        Scientists confirm that 90% of lost focus in class occurs whenever Pranavi turns around or gives that specific side-eye glance.
+                    </p>
+                </div>
+
+                <div class="interactive-card" style="margin-top: 20px;">
+                    <div class="card-title">🎭 JOKE GENERATOR</div>
+                    <p id="jokeBox" style="color: var(--cyan-accent); margin: 15px 0;">Click below to load another classroom roast!</p>
+                    <button class="option-btn" onclick="cycleJokes()">FETCH NEXT CLASSROOM JOKE 🔁</button>
+                </div>
+            </div>
+
+            <!-- PAGE 4: SUBJECT DOSSIER -->
+            <div id="tab-dossier" class="content-panel">
+                <h2 class="section-heading">CLASSIFIED DOSSIER: SUBJECT PRANAVI</h2>
+                
+                <div class="grid-2">
+                    <div class="interactive-card">
+                        <div class="card-title">🔍 OBSERVED BEHAVIORAL PATTERNS</div>
+                        <ul style="font-size: 0.88rem; line-height: 2; color: #cbd5e1; padding-left: 18px;">
+                            <li>High-level sarcastic response precision.</li>
+                            <li>Spontaneous smiling during quiet class moments.</li>
+                            <li>Mastery over subtle side-eyes and eye-rolls.</li>
+                            <li>Zero tolerance for boring conversations.</li>
+                            <li>Undetected charm frequency operating 24/7.</li>
+                        </ul>
+                    </div>
+
+                    <div class="interactive-card">
+                        <div class="card-title">🛡️ SYSTEM THREAT EVALUATION</div>
+                        <p style="font-size: 1.8rem; color: var(--pink-accent); font-weight: bold; margin: 12px 0;">CLASS: MAXIMUM THREAT</p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.7;">
+                            WARNING: Eye contact longer than 3 seconds may trigger system crash, loss of words, or sudden elevated heartbeat. Proceed with caution.
                         </p>
                     </div>
-                    <div class="card-panel" style="text-align: center;">
-                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">Do you forgive me for making you wait?</p>
-                        <button class="btn-action" style="max-width: 200px; font-size: 0.85rem;" onclick="forgiveAction()">Forgiven 💖</button>
-                    </div>
                 </div>
 
-                <!-- TAB 1: MULTI-STAGE QUIZ -->
-                <div id="tabQuiz" class="tab-panel hidden">
-                    <div id="quizStageContainer">
-                        <div class="card-panel">
-                            <p id="quizQuestion" style="font-weight: 600; margin-bottom: 15px;"></p>
-                            <div id="quizOptions"></div>
-                        </div>
+                <div class="interactive-card" style="margin-top: 25px;">
+                    <div class="card-title">📊 REAL-TIME TERMINAL SYSTEM LOGS</div>
+                    <div class="terminal-log" id="terminalLogs">
+                        <div class="log-line">[SYS_INIT]: Initializing stealth handshake with subject Pranavi...</div>
+                        <div class="log-line">[ENCRYPTION]: 4096-bit dark romance key active.</div>
+                        <div class="log-line">[DETECTED]: Target "Pranavi" active on cyber network.</div>
+                        <div class="log-line">[MEMORY_ALLOC]: 99.8% memory dedicated to class memories.</div>
+                        <div class="log-line">[STATUS]: Cyber vault operational and encrypted.</div>
                     </div>
-                    <div id="quizFinished" class="card-panel hidden" style="text-align: center;">
-                        <h3 class="text-accent glow-text" style="margin-bottom: 8px;">Protocol Complete 🖤</h3>
-                        <p style="font-size: 0.85rem; color: var(--text-secondary);">
-                            No matter what you clicked... what's ours stays ours.
+                </div>
+            </div>
+
+            <!-- PAGE 5: INTERACTIVE PROTOCOLS & GAMES -->
+            <div id="tab-games" class="content-panel">
+                <h2 class="section-heading">INTERACTIVE PROTOCOLS & MINI-GAMES</h2>
+                
+                <div class="sub-heading">PROTOCOL 01: COMPATIBILITY OVERRIDE QUIZ</div>
+                <div class="interactive-card">
+                    <div class="card-title">Question 1: What was your first thought upon unlocking this vault?</div>
+                    <button class="option-btn" onclick="handleChoice('Option 1: Impressed!')">1. "Okay wow, he actually spent two days coding this!" 😼</button>
+                    <button class="option-btn" onclick="handleChoice('Option 2: Smiling!')">2. "I'm smiling at my screen right now..." 🖤</button>
+                    <button class="option-btn" onclick="handleChoice('Option 3: Confused!')">3. "How did he even make a full website for me?!" 🤖</button>
+                </div>
+
+                <div class="sub-heading">PROTOCOL 02: NEXT SCHEDULED MEET-UP?</div>
+                <div class="interactive-card">
+                    <button class="option-btn" onclick="triggerConfetti('Coffee / Chill session approved! ☕')">Plan A: Quiet coffee / tea break session</button>
+                    <button class="option-btn" onclick="triggerConfetti('Secret Spotify playlist exchange active! 🎧')">Plan B: Secret Spotify playlist exchange</button>
+                    <button class="option-btn" onclick="triggerConfetti('Classroom roast battle continues! 🤫')">Plan C: Continue roasting each other in class</button>
+                </div>
+
+                <div class="sub-heading">PROTOCOL 03: CYBER FORTUNE TELLER</div>
+                <div class="interactive-card" style="text-align: center;">
+                    <div id="fortuneBox" style="font-size: 1.1rem; color: var(--gold-accent); margin: 20px 0; font-weight: bold;">
+                        Click below to reveal your fortune for tomorrow!
+                    </div>
+                    <button class="btn-submit" onclick="spinFortune()" style="width: 100%;">SPIN FORTUNE WHEEL 🔮</button>
+                </div>
+            </div>
+
+            <!-- PAGE 6: TRANSMIT ENCRYPTED RESPONSE -->
+            <div id="tab-notes" class="content-panel">
+                <h2 class="section-heading">TRANSMIT ENCRYPTED RESPONSE</h2>
+                <div class="interactive-card">
+                    <div class="confess-box">
+                        <p style="font-size: 0.88rem; color: var(--text-muted);">
+                            Write a secret message, reaction, or reply below. It gets stored directly in local terminal cache:
                         </p>
+                        <textarea id="userNote" class="custom-note" placeholder="Type your honest reaction, thoughts, or secret reply here..."></textarea>
+                        <button class="btn-submit" onclick="saveNote()">TRANSMIT TO VAULT CACHE 🚀</button>
                     </div>
                 </div>
+                <div id="noteStatus" style="margin-top: 18px; font-size: 0.9rem; color: var(--success-green); display: none; font-weight: 600;"></div>
+            </div>
 
-                <!-- TAB 2: MOOD SYNTHESIZER -->
-                <div id="tabMood" class="tab-panel hidden">
-                    <div class="mood-grid">
-                        <div class="mood-card" onclick="triggerMood('bored')">
-                            <div style="font-size: 1.5rem;">🥱</div>
-                            <div style="font-size: 0.8rem; font-weight: 600; margin-top: 4px;">Bored in Class</div>
-                        </div>
-                        <div class="mood-card" onclick="triggerMood('thinking')">
-                            <div style="font-size: 1.5rem;">💭</div>
-                            <div style="font-size: 0.8rem; font-weight: 600; margin-top: 4px;">Thinking of Him</div>
-                        </div>
-                        <div class="mood-card" onclick="triggerMood('smiling')">
-                            <div style="font-size: 1.5rem;">😏</div>
-                            <div style="font-size: 0.8rem; font-weight: 600; margin-top: 4px;">Grinning at Phone</div>
-                        </div>
-                        <div class="mood-card" onclick="triggerMood('overthinking')">
-                            <div style="font-size: 1.5rem;">🤯</div>
-                            <div style="font-size: 0.8rem; font-weight: 600; margin-top: 4px;">Overthinking</div>
-                        </div>
-                    </div>
-                    <div id="moodOutputCard" class="card-panel hidden" style="margin-top: 15px; border-color: var(--accent-cyan);">
-                        <p id="moodOutputText" style="font-size: 0.88rem; line-height: 1.5;"></p>
-                    </div>
+            <!-- PAGE 7: CREDITS & SYSTEM INFORMATION -->
+            <div id="tab-credits" class="content-panel">
+                <h2 class="section-heading">DEVELOPER CREDITS & ARCHITECTURE</h2>
+                <div class="letter-card">
+                    <h3 style="color: var(--cyan-accent); margin-bottom: 12px;">PROJECT ETERNITY // BUILD DETAILS</h3>
+                    <p style="margin-bottom: 10px;"><strong>Lead Engineer:</strong> Shivam 🥷</p>
+                    <p style="margin-bottom: 10px;"><strong>Dedicated To:</strong> Pranavi 🖤</p>
+                    <p style="margin-bottom: 10px;"><strong>Lines of Code:</strong> 1000+ Lines (HTML5 / CSS3 / JavaScript)</p>
+                    <p style="margin-bottom: 10px;"><strong>Build Duration:</strong> 48 Hours of Quiet Coding</p>
+                    <p style="margin-bottom: 10px;"><strong>Aesthetic Framework:</strong> Cyberpunk / Dark Romance / Terminal UI</p>
+                    <p style="margin-bottom: 0;"><strong>Status:</strong> Permanently Deployed on GitHub Pages</p>
                 </div>
-
-                <!-- TAB 3: DARK RAP BARS -->
-                <div id="tabRap" class="tab-panel hidden">
-                    <div class="card-panel">
-                        <h4 class="text-accent" style="margin-bottom: 4px;">"Hacked Your Heart" 🖤</h4>
-                        <p style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 12px;">EXCLUSIVE VERSE</p>
-                        <p style="font-size: 0.88rem; line-height: 1.7; font-style: italic; color: #e0e0e0;">
-                            "Hacked your heart, now I'm on your mental...<br>
-                            Our vibe is wild, but my touch is too gentle.<br>
-                            It's way too better, way too deep,<br>
-                            A love story written where nobody's supposed to look.<br>
-                            It's the dark romance that you secretly crave."
-                        </p>
-                    </div>
-                </div>
-
-                <!-- TAB 4: MEMORY LOGS -->
-                <div id="tabVault" class="tab-panel hidden">
-                    <div class="card-panel">
-                        <div class="timeline-item">
-                            <div style="font-size: 0.7rem; font-family: var(--font-code); color: var(--accent-cyan);">LOG #001</div>
-                            <div style="font-size: 0.85rem; margin-top: 2px;">Caught grinning in class while reading texts 😏</div>
-                        </div>
-                        <div class="timeline-item">
-                            <div style="font-size: 0.7rem; font-family: var(--font-code); color: var(--accent-cyan);">LOG #002</div>
-                            <div style="font-size: 0.85rem; margin-top: 2px;">Top secret access: What's ours stays ours.</div>
-                        </div>
-                        <div class="timeline-item">
-                            <div style="font-size: 0.7rem; font-family: var(--font-code); color: var(--accent-cyan);">LOG #003</div>
-                            <div style="font-size: 0.85rem; margin-top: 2px;">Living rent-free in your mind permanently 🖤</div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
 
         </div>
-
     </div>
 
+    <!-- JAVASCRIPT ENGINE -->
     <script>
-        /* Canvas Animation */
-        const canvas = document.getElementById('bgCanvas');
+        // Matrix Rain Background Animation
+        const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
-        let particles = [];
-        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.addEventListener('resize', resizeCanvas);
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
         resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
 
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.speedX = (Math.random() - 0.5) * 0.5;
-                this.speedY = (Math.random() - 0.5) * 0.5;
-            }
-            update() {
-                this.x += this.speedX; this.y += this.speedY;
-                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-            }
-            draw() {
-                ctx.fillStyle = 'rgba(255, 42, 95, 0.4)';
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+        const chars = '0123456789ABCDEFPRANAVI♡♥🥷';
+        const fontSize = 14;
+        let columns = Math.floor(canvas.width / fontSize);
+        let drops = Array(columns).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(3, 3, 5, 0.12)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#ff2a6d';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
             }
         }
-        for (let i = 0; i < 50; i++) particles.push(new Particle());
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(animate);
-        }
-        animate();
+        setInterval(drawMatrix, 33);
 
-        /* App Functionality */
-        function attemptUnlock() {
-            const input = document.getElementById("passInput").value.trim();
-            if (input !== "") {
-                document.getElementById("lockScreen").classList.add("hidden");
-                document.getElementById("mainDashboard").classList.remove("hidden");
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                initQuiz();
-            }
-        }
-
-        function switchTab(tabKey) {
-            const tabs = ['sorry', 'quiz', 'mood', 'rap', 'vault'];
-            tabs.forEach(t => document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('hidden'));
+        // Vault Passcode Unlock Logic
+        function unlockVault() {
+            const pass = document.getElementById('passInput').value;
             
-            const navBtns = document.querySelectorAll('.nav-btn');
-            navBtns.forEach(btn => btn.classList.remove('active'));
+            document.getElementById('lock-screen').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'flex';
 
-            document.getElementById('tab' + tabKey.charAt(0).toUpperCase() + tabKey.slice(1)).classList.remove('hidden');
-            const keyIndexMap = { sorry: 0, quiz: 1, mood: 2, rap: 3, vault: 4 };
-            navBtns[keyIndexMap[tabKey]].classList.add('active');
+            confetti({
+                particleCount: 120,
+                spread: 80,
+                origin: { y: 0.6 },
+                colors: ['#ff2a6d', '#05d9e8', '#ffd700']
+            });
+
+            addLog('[OVERRIDE]: Keycode accepted ("' + (pass || 'BYPASS') + '"). Welcome Pranavi.');
         }
 
-        function forgiveAction() {
-            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-            alert("Best decision ever! Welcome to the secret vault 😏🖤");
+        document.getElementById('passInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') unlockVault();
+        });
+
+        function showHint() {
+            alert("Hint: Type literally anything you want, or just click ACCESS TERMINAL! 😼");
         }
 
-        const quizData = [
-            { q: "1. Who occupies 99% of your mind right now?", options: ["Someone writing dark romance bars 🖤", "The mystery guy on Discord 😉", "Definitely Bagad Billa 🥷"] },
-            { q: "2. What happens if someone asks about us?", options: ["It's a top-secret access code.", "What's ours stays ours."] },
-            { q: "3. Why were you grinning in class?", options: ["Thinking about your text...", "You already know 😏"] }
+        // Tab Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.content-panel').forEach(panel => panel.classList.remove('active'));
+
+            event.currentTarget.classList.add('active');
+            document.getElementById('tab-' + tabId).classList.add('active');
+
+            addLog('[NAVIGATE]: Accessed module //' + tabId.toUpperCase());
+        }
+
+        // Sync Calibration Meter
+        function runAnalysis() {
+            const meter = document.getElementById('loveMeter');
+            meter.style.width = '0%';
+            setTimeout(() => {
+                meter.style.width = '100%';
+            }, 100);
+            
+            setTimeout(() => {
+                confetti({ particleCount: 70, spread: 60 });
+                alert("CALIBRATION COMPLETE: 100% Aura Alignment Detected! 🖤");
+            }, 2100);
+        }
+
+        // Secret Quotes Generator Array
+        const secretQuotes = [
+            "\"You have a way of making simple class moments feel like movie scenes.\"",
+            "\"If I had a line of code for every time you crossed my mind, this website would crash from infinite loops.\"",
+            "\"Dark mode enabled because my world gets too bright whenever you laugh.\"",
+            "\"You're the only person who can confuse me and make me smile at the exact same time.\"",
+            "\"Two days of coding was 100% worth it just to hear your reaction to this vault.\""
         ];
 
-        let quizIndex = 0;
-        function initQuiz() {
-            if (quizIndex < quizData.length) {
-                const q = quizData[quizIndex];
-                document.getElementById("quizQuestion").innerText = q.q;
-                const opts = document.getElementById("quizOptions");
-                opts.innerHTML = "";
-                q.options.forEach(opt => {
-                    const btn = document.createElement("button");
-                    btn.className = "quiz-opt-btn";
-                    btn.innerText = opt;
-                    btn.onclick = () => {
-                        confetti({ particleCount: 30, spread: 50, origin: { y: 0.7 } });
-                        quizIndex++;
-                        initQuiz();
-                    };
-                    opts.appendChild(btn);
-                });
-            } else {
-                document.getElementById("quizStageContainer").classList.add("hidden");
-                document.getElementById("quizFinished").classList.remove("hidden");
+        function generateSecretQuote() {
+            const quote = secretQuotes[Math.floor(Math.random() * secretQuotes.length)];
+            document.getElementById('randomQuoteBox').innerText = quote;
+            addLog('[QUOTE_GEN]: Secret quote unlocked.');
+        }
+
+        // Classroom Jokes Array
+        const jokes = [
+            "Pranavi trying to act innocent after saying the most unhinged thing in class. 😼",
+            "Teacher: 'Why are you guys laughing?' Pranavi & Me: *silent side-eye intense glance*",
+            "Legend says if you say 'Pranavi' 3 times in front of a mirror, she'll appear and roast your outfit.",
+            "Pranavi's phone battery: 1%. Pranavi's sarcasm battery: 1000% charged."
+        ];
+        let jokeIdx = 0;
+
+        function cycleJokes() {
+            jokeIdx = (jokeIdx + 1) % jokes.length;
+            document.getElementById('jokeBox').innerText = jokes[jokeIdx];
+            addLog('[JOKE_CYCLE]: Loaded joke #' + (jokeIdx + 1));
+        }
+
+        // Fortunes Array
+        const fortunes = [
+            "🔮 Tomorrow's Fortune: You will catch yourself smiling in class for no clear reason.",
+            "🔮 Tomorrow's Fortune: A secret Spotify playlist exchange is in your near future.",
+            "🔮 Tomorrow's Fortune: High probability of receiving another unexpected compliment.",
+            "🔮 Tomorrow's Fortune: You will win tomorrow's sarcasm roast battle."
+        ];
+
+        function spinFortune() {
+            const fortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+            document.getElementById('fortuneBox').innerText = fortune;
+            confetti({ particleCount: 40, spread: 40 });
+            addLog('[FORTUNE_SPIN]: Fortune generated.');
+        }
+
+        // Interactivity Handlers
+        function handleChoice(msg) {
+            alert('Protocol Recorded: ' + msg + ' 🖤');
+            addLog('[CHOICE_RECORDED]: ' + msg);
+        }
+
+        function triggerConfetti(text) {
+            confetti({ particleCount: 90, spread: 90, colors: ['#ff2a6d', '#05d9e8'] });
+            alert('PROTOCOL EXECUTION: ' + text);
+            addLog('[EVENT_TRIGGERED]: ' + text);
+        }
+
+        // Note Saver
+        function saveNote() {
+            const txt = document.getElementById('userNote').value;
+            const status = document.getElementById('noteStatus');
+            if (!txt.trim()) {
+                alert('Please write something before transmitting!');
+                return;
+            }
+            status.style.display = 'block';
+            status.innerText = '✔ ENCRYPTED RESPONSE STORED IN TERMINAL MEMORY CACHE!';
+            addLog('[TRANSMISSION]: Stored reaction note (' + txt.length + ' chars)');
+            document.getElementById('userNote').value = '';
+        }
+
+        // Terminal Log Append Helper
+        function addLog(text) {
+            const logs = document.getElementById('terminalLogs');
+            if (logs) {
+                const line = document.createElement('div');
+                line.className = 'log-line';
+                line.innerText = text;
+                logs.appendChild(line);
+                logs.scrollTop = logs.scrollHeight;
             }
         }
 
-        function triggerMood(type) {
-            const card = document.getElementById("moodOutputCard");
-            const text = document.getElementById("moodOutputText");
-            card.classList.remove("hidden");
-            if(type === 'bored') text.innerText = "Bored in class? Just open your phone and read our chats. Instant boredom fix 😉";
-            if(type === 'thinking') text.innerText = "Don't worry, I'm already living rent-free in your mind anyway 🖤";
-            if(type === 'smiling') text.innerText = "Caught you grinning again! Keep that smile, it suits you 😏";
-            if(type === 'overthinking') text.innerText = "Stop overthinking. You don't need anyone's approval, you're 100% safe here.";
+        // Web Audio Synthesizer
+        let audioCtx = null;
+        let isAudioPlaying = false;
+        let synthInterval = null;
+
+        function toggleAudio() {
+            const btn = document.getElementById('audioToggle');
+            if (!isAudioPlaying) {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                audioCtx.resume();
+                isAudioPlaying = true;
+                btn.innerText = "🔊 AUDIO: ON";
+                btn.style.borderColor = "var(--pink-accent)";
+                btn.style.color = "var(--pink-accent)";
+
+                synthInterval = setInterval(() => {
+                    if (!isAudioPlaying) return;
+                    let osc = audioCtx.createOscillator();
+                    let gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(110 + Math.random() * 70, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 1.5);
+                }, 1200);
+            } else {
+                isAudioPlaying = false;
+                if (synthInterval) clearInterval(synthInterval);
+                btn.innerText = "🔊 AUDIO: OFF";
+                btn.style.borderColor = "var(--cyan-accent)";
+                btn.style.color = "var(--cyan-accent)";
+            }
         }
     </script>
 </body>
