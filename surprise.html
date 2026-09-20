@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROJECT: ETERNITY // TOP SECRET</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg-dark: #050508;
+            --panel-bg: rgba(13, 13, 20, 0.85);
+            --border-line: rgba(255, 42, 95, 0.3);
+            --accent-red: #ff2a5f;
+            --accent-purple: #8a2be2;
+            --accent-cyan: #00f0ff;
+            --text-primary: #f0f0f5;
+            --text-secondary: #a0a0b5;
+            --glow-red: rgba(255, 42, 95, 0.6);
+            --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --font-code: 'Courier New', Courier, monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            font-family: var(--font-main);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .ambient-orb {
+            position: fixed;
+            width: 450px;
+            height: 450px;
+            border-radius: 50%;
+            filter: blur(140px);
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .orb-1 { top: -10%; left: -10%; background: var(--accent-red); }
+        .orb-2 { bottom: -10%; right: -10%; background: var(--accent-purple); }
+
+        .window-container {
+            position: relative;
+            z-index: 10;
+            width: 92%;
+            max-width: 580px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border-line);
+            border-radius: 20px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 42, 95, 0.15);
+            overflow: hidden;
+            animation: containerAppear 0.8s ease-out;
+        }
+
+        @keyframes containerAppear {
+            from { opacity: 0; transform: scale(0.95) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .window-header {
+            background: rgba(5, 5, 8, 0.8);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .window-title {
+            font-family: var(--font-code);
+            font-size: 0.75rem;
+            color: var(--accent-cyan);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-red);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-red);
+            animation: pulseDot 1.5s infinite alternate;
+        }
+
+        @keyframes pulseDot {
+            from { opacity: 0.4; }
+            to { opacity: 1; }
+        }
+
+        .window-body {
+            padding: 28px;
+            min-height: 420px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hidden { display: none !important; }
+        .text-accent { color: var(--accent-red); }
+        .text-cyan { color: var(--accent-cyan); }
+        .glow-text { text-shadow: 0 0 10px var(--glow-red); }
+
+        /* Lock Screen */
+        .lock-wrapper { text-align: center; }
+        .lock-icon-container {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px auto;
+            border: 2px solid var(--accent-red);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 25px var(--glow-red);
+            animation: floatLock 3s ease-in-out infinite;
+        }
+
+        @keyframes floatLock {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .lock-title { font-size: 1.5rem; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 8px; }
+        .lock-subtitle { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 25px; line-height: 1.4; }
+
+        .input-group { position: relative; max-width: 320px; margin: 0 auto 15px auto; }
+        .secret-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--border-line);
+            border-radius: 12px;
+            padding: 14px 18px;
+            color: #fff;
+            font-size: 1rem;
+            text-align: center;
+            letter-spacing: 2px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .secret-input:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+        }
+
+        .btn-action {
+            width: 100%;
+            max-width: 320px;
+            background: linear-gradient(135deg, var(--accent-red), #b0003a);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 8px 25px var(--glow-red);
+            margin: 0 auto;
+            display: block;
+        }
+
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 12px 30px var(--glow-red); }
+
+        /* Navigation Bar */
+        .app-nav {
+            display: flex;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-line);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 22px;
+            gap: 4px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 10px 4px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .nav-btn.active {
+            background: var(--accent-red);
+            color: white;
+            box-shadow: 0 4px 15px var(--glow-red);
+        }
+
+        .card-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 18px;
+        }
+
+        /* Apology Box Special Styling */
+        .apology-box {
+            background: linear-gradient(145deg, rgba(255, 42, 95, 0.1), rgba(138, 43, 226, 0.1));
+            border: 1px solid var(--accent-red);
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .quiz-opt-btn {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            padding: 12px 16px;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .quiz-opt-btn:hover {
+            background: rgba(255, 42, 95, 0.15);
+            border-color: var(--accent-red);
+        }
+
+        .mood-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .mood-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 14px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .mood-card:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 240, 255, 0.08);
+        }
+
+        .timeline-item {
+            border-left: 2px solid var(--accent-red);
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="bgCanvas"></canvas>
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+
+    <div class="window-container">
+        
+        <div class="window-header">
+            <div class="window-title">
+                <div class="status-dot"></div>
+                <span>SYSTEM://VAULT.PRANAVI.EXE</span>
+            </div>
+        </div>
+
+        <div class="window-body">
+
+            <!-- LOCK SCREEN -->
+            <div id="lockScreen" class="lock-wrapper">
+                <div class="lock-icon-container">
+                    <span style="font-size: 1.8rem;">🥷</span>
+                </div>
+                <h2 class="lock-title glow-text">SECRET VAULT</h2>
+                <p class="lock-subtitle">Access only for the girl who keeps grinning in class for no reason 😏</p>
+                
+                <div class="input-group">
+                    <input type="password" id="passInput" class="secret-input" placeholder="ENTER KEYCODE" autocomplete="off">
+                </div>
+                <button class="btn-action" onclick="attemptUnlock()">ACCESS VAULT 🖤</button>
+            </div>
+
+            <!-- MAIN DASHBOARD -->
+            <div id="mainDashboard" class="hidden">
+                
+                <div class="app-nav">
+                    <button class="nav-btn active" onclick="switchTab('sorry')">For You 🥺</button>
+                    <button class="nav-btn" onclick="switchTab('quiz')">Quiz</button>
+                    <button class="nav-btn" onclick="switchTab('mood')">Mood</button>
+                    <button class="nav-btn" onclick="switchTab('rap')">Dark Rap</button>
+                    <button class="nav-btn" onclick="switchTab('vault')">Logs</button>
+                </div>
+
+                <!-- TAB 0: SINCERE APOLOGY & WAIT DEDICATION -->
+                <div id="tabSorry" class="tab-panel">
+                    <div class="apology-box">
+                        <h3 class="text-accent glow-text" style="margin-bottom: 8px;">So Sorry For The Wait! 🖤</h3>
+                        <p style="font-size: 0.88rem; line-height: 1.6; color: #f0f0f5;">
+                            Network glitched, servers blocked, but I refused to give you anything less than absolute perfection. Thank you for being so patient with me!
+                        </p>
+                    </div>
+                    <div class="card-panel" style="text-align: center;">
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">Do you forgive me for making you wait?</p>
+                        <button class="btn-action" style="max-width: 200px; font-size: 0.85rem;" onclick="forgiveAction()">Forgiven 💖</button>
+                    </div>
+                </div>
+
+                <!-- TAB 1: MULTI-STAGE QUIZ -->
+                <div id="tabQuiz" class="tab-panel hidden">
+                    <div id="quizStageContainer">
+                        <div class="card-panel">
+                            <p id="quizQuestion" style="font-weight: 600; margin-bottom: 15px;"></p>
+                            <div id="quizOptions"></div>
+                        </div>
+                    </div>
+                    <div id="quizFinished" class="card-panel hidden" style="text-align: center;">
+                        <h3 class="text-accent glow-text" style="margin-bottom: 8px;">Protocol Complete 🖤</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                            No matter what you clicked... what's ours stays ours.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- TAB 2: MOOD SYNTHESIZER -->
+                <div id="tabMood" class="tab-panel hidden">
+                    <div class="mood-grid">
+                        <div class="mood-card" onclick="triggerMood('bored')">
+                            <div style="font-size: 1.5rem;">🥱</div>
+                            <div style="font-size: 0.8rem; font-weight: 600; margin-top: 4px;">Bored in Class</div>
+                        </div>
+                        <div class="mood-card" onclick="triggerMood('thinking')">
+                            <div style="font-size: 1.5rem;">💭</div>
+                            <div style="font-size: 0.8rem; font-weight: 600; margin-top: 4px;">Thinking of Him</div>
+                        </div>
+                        <div class="mood-card" onclick="triggerMood('smiling')">
+                            <div style="font-size: 1.5rem;">😏</div>
+                            <div style="font-size: 0.8rem; font-weight: 600; margin-top: 4px;">Grinning at Phone</div>
+                        </div>
+                        <div class="mood-card" onclick="triggerMood('overthinking')">
+                            <div style="font-size: 1.5rem;">🤯</div>
+                            <div style="font-size: 0.8rem; font-weight: 600; margin-top: 4px;">Overthinking</div>
+                        </div>
+                    </div>
+                    <div id="moodOutputCard" class="card-panel hidden" style="margin-top: 15px; border-color: var(--accent-cyan);">
+                        <p id="moodOutputText" style="font-size: 0.88rem; line-height: 1.5;"></p>
+                    </div>
+                </div>
+
+                <!-- TAB 3: DARK RAP BARS -->
+                <div id="tabRap" class="tab-panel hidden">
+                    <div class="card-panel">
+                        <h4 class="text-accent" style="margin-bottom: 4px;">"Hacked Your Heart" 🖤</h4>
+                        <p style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 12px;">EXCLUSIVE VERSE</p>
+                        <p style="font-size: 0.88rem; line-height: 1.7; font-style: italic; color: #e0e0e0;">
+                            "Hacked your heart, now I'm on your mental...<br>
+                            Our vibe is wild, but my touch is too gentle.<br>
+                            It's way too better, way too deep,<br>
+                            A love story written where nobody's supposed to look.<br>
+                            It's the dark romance that you secretly crave."
+                        </p>
+                    </div>
+                </div>
+
+                <!-- TAB 4: MEMORY LOGS -->
+                <div id="tabVault" class="tab-panel hidden">
+                    <div class="card-panel">
+                        <div class="timeline-item">
+                            <div style="font-size: 0.7rem; font-family: var(--font-code); color: var(--accent-cyan);">LOG #001</div>
+                            <div style="font-size: 0.85rem; margin-top: 2px;">Caught grinning in class while reading texts 😏</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div style="font-size: 0.7rem; font-family: var(--font-code); color: var(--accent-cyan);">LOG #002</div>
+                            <div style="font-size: 0.85rem; margin-top: 2px;">Top secret access: What's ours stays ours.</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div style="font-size: 0.7rem; font-family: var(--font-code); color: var(--accent-cyan);">LOG #003</div>
+                            <div style="font-size: 0.85rem; margin-top: 2px;">Living rent-free in your mind permanently 🖤</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        /* Canvas Animation */
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(255, 42, 95, 0.4)';
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+        for (let i = 0; i < 50; i++) particles.push(new Particle());
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        /* App Functionality */
+        function attemptUnlock() {
+            const input = document.getElementById("passInput").value.trim();
+            if (input !== "") {
+                document.getElementById("lockScreen").classList.add("hidden");
+                document.getElementById("mainDashboard").classList.remove("hidden");
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                initQuiz();
+            }
+        }
+
+        function switchTab(tabKey) {
+            const tabs = ['sorry', 'quiz', 'mood', 'rap', 'vault'];
+            tabs.forEach(t => document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('hidden'));
+            
+            const navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById('tab' + tabKey.charAt(0).toUpperCase() + tabKey.slice(1)).classList.remove('hidden');
+            const keyIndexMap = { sorry: 0, quiz: 1, mood: 2, rap: 3, vault: 4 };
+            navBtns[keyIndexMap[tabKey]].classList.add('active');
+        }
+
+        function forgiveAction() {
+            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+            alert("Best decision ever! Welcome to the secret vault 😏🖤");
+        }
+
+        const quizData = [
+            { q: "1. Who occupies 99% of your mind right now?", options: ["Someone writing dark romance bars 🖤", "The mystery guy on Discord 😉", "Definitely Bagad Billa 🥷"] },
+            { q: "2. What happens if someone asks about us?", options: ["It's a top-secret access code.", "What's ours stays ours."] },
+            { q: "3. Why were you grinning in class?", options: ["Thinking about your text...", "You already know 😏"] }
+        ];
+
+        let quizIndex = 0;
+        function initQuiz() {
+            if (quizIndex < quizData.length) {
+                const q = quizData[quizIndex];
+                document.getElementById("quizQuestion").innerText = q.q;
+                const opts = document.getElementById("quizOptions");
+                opts.innerHTML = "";
+                q.options.forEach(opt => {
+                    const btn = document.createElement("button");
+                    btn.className = "quiz-opt-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => {
+                        confetti({ particleCount: 30, spread: 50, origin: { y: 0.7 } });
+                        quizIndex++;
+                        initQuiz();
+                    };
+                    opts.appendChild(btn);
+                });
+            } else {
+                document.getElementById("quizStageContainer").classList.add("hidden");
+                document.getElementById("quizFinished").classList.remove("hidden");
+            }
+        }
+
+        function triggerMood(type) {
+            const card = document.getElementById("moodOutputCard");
+            const text = document.getElementById("moodOutputText");
+            card.classList.remove("hidden");
+            if(type === 'bored') text.innerText = "Bored in class? Just open your phone and read our chats. Instant boredom fix 😉";
+            if(type === 'thinking') text.innerText = "Don't worry, I'm already living rent-free in your mind anyway 🖤";
+            if(type === 'smiling') text.innerText = "Caught you grinning again! Keep that smile, it suits you 😏";
+            if(type === 'overthinking') text.innerText = "Stop overthinking. You don't need anyone's approval, you're 100% safe here.";
+        }
+    </script>
+</body>
+</html>
