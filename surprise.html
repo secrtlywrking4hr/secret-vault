@@ -1,967 +1,679 @@
-<!DOCTYPE html>
+            <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROJECT ETERNITY // OMEGA RESTRICTED VAULT</title>
-    <!-- Google Fonts & Confetti Library -->
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&family=Cinzel:wght@600;800;900&family=Playfair+Display:ital,wght@0,600;1,400;1,600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-
-    <style>
-        :root {
-            --bg-deep: #030305;
-            --panel-bg: rgba(10, 10, 16, 0.85);
-            --border-glow: rgba(255, 42, 109, 0.45);
-            --pink-accent: #ff2a6d;
-            --cyan-accent: #05d9e8;
-            --purple-accent: #bf5af2;
-            --gold-accent: #ffd700;
-            --text-main: #e2e8f0;
-            --text-muted: #94a3b8;
-            --crimson: #990000;
-            --success-green: #00ff88;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            font-family: 'Fira Code', monospace;
-        }
-
-        body {
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            min-height: 100vh;
-            overflow-x: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            padding: 10px;
-        }
-
-        /* Matrix Rain Background Canvas */
-        #bg-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-            opacity: 0.35;
-        }
-
-        /* Main Container Framework */
-        .vault-wrapper {
-            position: relative;
-            z-index: 10;
-            width: 95%;
-            max-width: 1250px;
-            min-height: 90vh;
-            background: var(--panel-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-glow);
-            border-radius: 18px;
-            box-shadow: 0 0 60px rgba(255, 42, 109, 0.2), inset 0 0 25px rgba(5, 217, 232, 0.08);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            margin: 15px 0;
-        }
-
-        /* Top Header Navigation Bar */
-        .system-header {
-            padding: 16px 25px;
-            border-bottom: 1px solid rgba(255, 42, 109, 0.25);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(4, 4, 8, 0.85);
-        }
-
-        .header-title {
-            font-size: 0.85rem;
-            letter-spacing: 2.5px;
-            color: var(--pink-accent);
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 700;
-        }
-
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            background-color: var(--pink-accent);
-            border-radius: 50%;
-            box-shadow: 0 0 12px var(--pink-accent);
-            animation: pulseGlow 1.5s infinite;
-        }
-
-        @keyframes pulseGlow {
-            0% { opacity: 0.3; transform: scale(0.9); }
-            50% { opacity: 1; transform: scale(1.1); }
-            100% { opacity: 0.3; transform: scale(0.9); }
-        }
-
-        .header-controls {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .audio-btn {
-            background: transparent;
-            border: 1px solid var(--cyan-accent);
-            color: var(--cyan-accent);
-            padding: 6px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
-
-        .audio-btn:hover {
-            background: var(--cyan-accent);
-            color: #000;
-            box-shadow: 0 0 15px var(--cyan-accent);
-        }
-
-        /* Lock Screen View */
-        #lock-screen {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 50px 20px;
-            text-align: center;
-        }
-
-        .vault-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 2px solid var(--pink-accent);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2.5rem;
-            margin-bottom: 25px;
-            box-shadow: 0 0 30px rgba(255, 42, 109, 0.4);
-            background: rgba(255, 42, 109, 0.08);
-        }
-
-        .lock-title {
-            font-family: 'Cinzel', serif;
-            font-size: 2.5rem;
-            color: #fff;
-            letter-spacing: 5px;
-            margin-bottom: 12px;
-        }
-
-        .lock-subtitle {
-            color: var(--text-muted);
-            font-size: 0.88rem;
-            margin-bottom: 35px;
-            max-width: 550px;
-            line-height: 1.7;
-        }
-
-        .passcode-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-            max-width: 350px;
-        }
-
-        .passcode-input {
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid var(--border-glow);
-            padding: 15px 20px;
-            border-radius: 8px;
-            color: #fff;
-            text-align: center;
-            font-size: 1.15rem;
-            letter-spacing: 4px;
-            outline: none;
-            transition: all 0.3s;
-        }
-
-        .passcode-input:focus {
-            border-color: var(--cyan-accent);
-            box-shadow: 0 0 20px rgba(5, 217, 232, 0.4);
-        }
-
-        .btn-submit {
-            background: linear-gradient(135deg, var(--pink-accent), var(--crimson));
-            color: #fff;
-            border: none;
-            padding: 15px;
-            border-radius: 8px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(255, 42, 109, 0.4);
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 30px rgba(255, 42, 109, 0.7);
-        }
-
-        .hint-text {
-            margin-top: 18px;
-            font-size: 0.78rem;
-            color: var(--cyan-accent);
-            opacity: 0.85;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        /* Unlocked Dashboard Layout */
-        #dashboard {
-            display: none;
-            flex: 1;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        /* Tab Navigation Header */
-        .vault-tabs {
-            display: flex;
-            border-bottom: 1px solid rgba(255, 42, 109, 0.25);
-            background: rgba(0, 0, 0, 0.5);
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .vault-tabs::-webkit-scrollbar { display: none; }
-
-        .tab-btn {
-            padding: 16px 22px;
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 0.82rem;
-            letter-spacing: 1.5px;
-            transition: all 0.3s;
-            border-bottom: 3px solid transparent;
-            white-space: nowrap;
-            font-weight: 600;
-        }
-
-        .tab-btn:hover {
-            color: var(--text-main);
-            background: rgba(255, 42, 109, 0.08);
-        }
-
-        .tab-btn.active {
-            color: var(--pink-accent);
-            border-bottom-color: var(--pink-accent);
-            background: rgba(255, 42, 109, 0.12);
-        }
-
-        /* Content Panels */
-        .content-panel {
-            flex: 1;
-            padding: 35px;
-            overflow-y: auto;
-            display: none;
-            max-height: 72vh;
-        }
-
-        .content-panel.active {
-            display: block;
-            animation: fadeInPanel 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes fadeInPanel {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Section Headings */
-        .section-heading {
-            font-family: 'Cinzel', serif;
-            font-size: 1.8rem;
-            color: var(--pink-accent);
-            margin-bottom: 22px;
-            letter-spacing: 2.5px;
-            border-left: 4px solid var(--pink-accent);
-            padding-left: 15px;
-        }
-
-        .sub-heading {
-            font-size: 1rem;
-            color: var(--cyan-accent);
-            margin: 25px 0 15px 0;
-            letter-spacing: 1.5px;
-            font-weight: 600;
-        }
-
-        /* Cards & Frameworks */
-        .letter-card {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 14px;
-            padding: 30px;
-            line-height: 1.95;
-            font-family: 'Playfair Display', serif;
-            font-size: 1.1rem;
-            color: #e2e8f0;
-            margin-bottom: 25px;
-            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 22px;
-            margin-top: 20px;
-        }
-
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 18px;
-            margin-top: 20px;
-        }
-
-        .interactive-card {
-            background: rgba(15, 15, 25, 0.7);
-            border: 1px solid rgba(5, 217, 232, 0.25);
-            padding: 24px;
-            border-radius: 12px;
-            transition: all 0.3s;
-        }
-
-        .interactive-card:hover {
-            border-color: var(--cyan-accent);
-            transform: translateY(-4px);
-            box-shadow: 0 8px 25px rgba(5, 217, 232, 0.2);
-        }
-
-        .quote-card {
-            background: rgba(20, 10, 25, 0.75);
-            border: 1px solid rgba(255, 42, 109, 0.3);
-            padding: 22px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            position: relative;
-            transition: all 0.3s;
-        }
-
-        .quote-card:hover {
-            border-color: var(--pink-accent);
-            box-shadow: 0 0 20px rgba(255, 42, 109, 0.25);
-        }
-
-        .quote-text {
-            font-family: 'Playfair Display', serif;
-            font-style: italic;
-            font-size: 1.05rem;
-            color: #f1f5f9;
-            line-height: 1.7;
-        }
-
-        .quote-tag {
-            display: inline-block;
-            margin-top: 10px;
-            font-size: 0.72rem;
-            color: var(--gold-accent);
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
-
-        .roast-card {
-            background: rgba(25, 20, 10, 0.75);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-
-        .roast-title {
-            color: var(--gold-accent);
-            font-weight: bold;
-            font-size: 0.95rem;
-            margin-bottom: 8px;
-        }
-
-        .card-title {
-            color: var(--cyan-accent);
-            margin-bottom: 12px;
-            font-size: 1rem;
-            font-weight: 700;
-        }
-
-        /* Meter Animation */
-        .meter-container {
-            width: 100%;
-            height: 12px;
-            background: #111;
-            border-radius: 6px;
-            overflow: hidden;
-            margin: 18px 0;
-            border: 1px solid #222;
-        }
-
-        .meter-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, var(--cyan-accent), var(--pink-accent), var(--gold-accent));
-            transition: width 2s cubic-bezier(0.1, 1, 0.1, 1);
-        }
-
-        .option-btn {
-            width: 100%;
-            text-align: left;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: var(--text-main);
-            padding: 14px 18px;
-            margin: 8px 0;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.25s;
-            font-size: 0.88rem;
-        }
-
-        .option-btn:hover {
-            background: rgba(255, 42, 109, 0.2);
-            border-color: var(--pink-accent);
-            color: #fff;
-            transform: translateX(5px);
-        }
-
-        .confess-box {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        textarea.custom-note {
-            width: 100%;
-            height: 140px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--border-glow);
-            border-radius: 10px;
-            padding: 18px;
-            color: #fff;
-            resize: none;
-            outline: none;
-            font-size: 0.95rem;
-        }
-
-        textarea.custom-note:focus {
-            border-color: var(--pink-accent);
-            box-shadow: 0 0 15px rgba(255, 42, 109, 0.3);
-        }
-
-        /* Terminal Logs Display */
-        .terminal-log {
-            background: #000;
-            border: 1px solid #1e1e2d;
-            border-radius: 8px;
-            padding: 18px;
-            font-size: 0.8rem;
-            color: #00ff88;
-            max-height: 180px;
-            overflow-y: auto;
-            margin-top: 15px;
-            line-height: 1.6;
-        }
-
-        .log-line {
-            margin-bottom: 6px;
-            opacity: 0.9;
-        }
-
-        /* Custom Scrollbars */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
-        ::-webkit-scrollbar-thumb { background: var(--border-glow); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--pink-accent); }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .vault-wrapper { width: 98%; min-height: 92vh; }
-            .lock-title { font-size: 1.8rem; }
-            .content-panel { padding: 20px; }
-            .tab-btn { padding: 12px 14px; font-size: 0.75rem; }
-            .letter-card { padding: 20px; font-size: 1rem; }
-        }
-    </style>
+    <title>PROJECT ETERNITY // OMEGA TERMINAL V5.0</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="dark-neon-theme">
 
-    <!-- Dynamic Background Canvas -->
-    <canvas id="bg-canvas"></canvas>
+    <canvas id="matrixCanvas"></canvas>
 
-    <div class="vault-wrapper">
-        <!-- System Top Bar -->
-        <div class="system-header">
-            <div class="header-title">
-                <div class="status-dot"></div>
-                SYSTEM://VAULT.PRANAVI.EXE [v4.0.9]
+    <div class="main-wrapper">
+        <header class="cyber-header">
+            <div class="brand-info">
+                <span class="status-indicator active"></span>
+                <span class="sys-title">SYSTEM://VAULT.PRANAVI.EXE</span>
+                <span class="badge">V5.0.0-PROD</span>
             </div>
-            <div class="header-controls">
-                <button class="audio-btn" id="audioToggle" onclick="toggleAudio()">🔊 AUDIO: OFF</button>
+            <div class="nav-actions">
+                <button id="themeToggleBtn" class="cyber-btn outline">THEME: CHILL NEON</button>
+                <button id="audioToggleBtn" class="cyber-btn glowing">AUDIO: OFF 🎵</button>
             </div>
-        </div>
+        </header>
 
-        <!-- LOCK SCREEN MODULE -->
-        <div id="lock-screen">
-            <div class="vault-avatar">🥷</div>
-            <h1 class="lock-title">RESTRICTED CYBER VAULT</h1>
-            <p class="lock-subtitle">
-                This encrypted environment was engineered exclusively for the girl who spent two days waiting while I was quietly building something special 😼. Enter keycode to override system security.
+        <section id="authGateway" class="vault-card auth-card">
+            <div class="avatar-ring">
+                <span class="ninja-icon">🥷</span>
+            </div>
+            <h1 class="main-title">RESTRICTED CYBER VAULT</h1>
+            <p class="cyber-desc">
+                This encrypted environment was engineered exclusively for the classical dancer who spent days waiting while I was quietly building something special 🥷.
             </p>
-            <div class="passcode-container">
-                <input type="password" id="passInput" class="passcode-input" placeholder="ENTER PASSCODE" autocomplete="off">
-                <button class="btn-submit" onclick="unlockVault()">ACCESS TERMINAL 🖤</button>
+            <div class="auth-input-group">
+                <input type="password" id="vaultPasscode" placeholder="ENTER SECRET KEYCODE..." autocomplete="off">
+                <button id="unlockBtn" class="cyber-btn action">ACCESS TERMINAL 🖤</button>
             </div>
-            <span class="hint-text" onclick="showHint()">Need a hint? (Click Here)</span>
-        </div>
+            <p id="authErrorMsg" class="error-msg hidden">Invalid Secret Passcode Key!</p>
+            <div id="hintTrigger" class="hint-link">Need a hint? (Enter her name or 0903)</div>
+        </section>
 
-        <!-- MAIN UNLOCKED DASHBOARD -->
-        <div id="dashboard">
-            <!-- Navigation Tabs (7 Pages) -->
-            <div class="vault-tabs">
-                <button class="tab-btn active" onclick="switchTab('letter')">📜 // MEMORANDUM</button>
-                <button class="tab-btn" onclick="switchTab('quotes')">🖤 // QUOTES VAULT</button>
-                <button class="tab-btn" onclick="switchTab('roasts')">🎭 // JOKES & ROASTS</button>
-                <button class="tab-btn" onclick="switchTab('dossier')">🗂️ // DOSSIER</button>
-                <button class="tab-btn" onclick="switchTab('games')">🎮 // PROTOCOLS</button>
-                <button class="tab-btn" onclick="switchTab('notes')">💬 // TRANSMIT</button>
-                <button class="tab-btn" onclick="switchTab('credits')">⚡ // CREDITS</button>
-            </div>
-
-            <!-- PAGE 1: CONFESSION MEMORANDUM -->
-            <div id="tab-letter" class="content-panel active">
-                <h2 class="section-heading">SECRET MEMORANDUM // UNLOCKED</h2>
-                
-                <div class="letter-card">
-                    <p style="margin-bottom: 18px;">Hey Pranavi,</p>
-                    <p style="margin-bottom: 18px;">
-                        First off, I know you waited two full days for this. But I promise you, I wasn’t just wasting time—I was spending every hour building a dedicated, multi-layered cyber vault completely custom-coded for you from scratch.
-                    </p>
-                    <p style="margin-bottom: 18px;">
-                        Regular text messages or simple Instagram DMs felt way too effortless for someone as chaotic, clever, and bright as you. So I decided to build a dark-themed cyber terminal that lives permanently on the internet, built exclusively around your frequency.
-                    </p>
-                    <p style="margin-bottom: 18px;">
-                        From your suppressed laughs in class to those random sarcastic side-eyes, you've somehow become the most interesting part of my day. Take your time, explore every tab, read through the quotes, check out the roasts, and unlock every secret protocol built into this vault.
-                    </p>
-                    <p>
-                        No algorithms, no ads, no external noise. Just a private cyber vault running strictly in dark mode. 🥷🖤
-                    </p>
+        <main id="vaultDashboard" class="vault-card dashboard-card hidden">
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-label">STATUS</span>
+                    <span class="stat-value highlight">EXAM BREAK 📚</span>
                 </div>
+                <div class="stat-item">
+                    <span class="stat-label">DAILY LIMIT</span>
+                    <span class="stat-value">10 MIN TIMER ⏱️</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">LOYALTY RATING</span>
+                    <span class="stat-value text-green">100% UNBREAKABLE</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">BOND TYPE</span>
+                    <span class="stat-value text-pink">WRITER x DANCER ✨</span>
+                </div>
+            </div>
 
-                <div class="interactive-card">
-                    <div class="card-title">⚡ REAL-TIME AURA SYNC METRICS</div>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">Calibrating psychic connection & sarcastic frequency levels...</p>
-                    <div class="meter-container">
-                        <div class="meter-fill" id="loveMeter"></div>
+            <nav class="cyber-tabs">
+                <button class="tab-btn active" data-tab="tab-bye-logs">01. Extended Bye & Miss U Logs</button>
+                <button class="tab-btn" data-tab="tab-exams-break">02. Mid-Terms & Silence Protocol</button>
+                <button class="tab-btn" data-tab="tab-cafe-puzzle">03. Silent Room Cafe Puzzle</button>
+                <button class="tab-btn" data-tab="tab-rap-vault">04. Cheesy Rap & Handwritten Notes</button>
+                <button class="tab-btn" data-tab="tab-loyalty">05. Unbreakable Loyalty Vault</button>
+            </nav>
+
+            <div id="tab-bye-logs" class="tab-pane active">
+                <div class="terminal-box">
+                    <div class="terminal-head">
+                        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                        <span class="term-title">DISCORD_CHATTER_ARCHIVE.LOG</span>
                     </div>
-                    <button class="btn-submit" onclick="runAnalysis()" style="width: 100%;">RUN SYNC CALIBRATION (100% Guaranteed)</button>
+                    <div id="chatConsole" class="terminal-content">
+                        </div>
                 </div>
             </div>
 
-            <!-- PAGE 2: DARK ROMANCE & CYBER LOVE QUOTES VAULT -->
-            <div id="tab-quotes" class="content-panel">
-                <h2 class="section-heading">CYBER LOVE & DARK ROMANCE VAULT</h2>
-                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 25px;">
-                    A curated archive of dark-aesthetic thoughts, cyber romance quotes, and secret notes:
-                </p>
-
-                <div class="quote-card">
-                    <p class="quote-text">"You aren't just a thought in my head; you're the main process consuming 99% of my CPU."</p>
-                    <span class="quote-tag">[ARCHIVE // CODE 01]</span>
-                </div>
-
-                <div class="quote-card">
-                    <p class="quote-text">"In a world full of noise, algorithms, and temporary people, your smile is the only signal I never want to filter out."</p>
-                    <span class="quote-tag">[ARCHIVE // CODE 02]</span>
-                </div>
-
-                <div class="quote-card">
-                    <p class="quote-text">"I didn't just build a website; I built a permanent digital monument so you know you're always on my mind."</p>
-                    <span class="quote-tag">[ARCHIVE // CODE 03]</span>
-                </div>
-
-                <div class="quote-card">
-                    <p class="quote-text">"You have this annoying habit of looking cute even when you're trying to act completely serious."</p>
-                    <span class="quote-tag">[ARCHIVE // CODE 04]</span>
-                </div>
-
-                <div class="quote-card">
-                    <p class="quote-text">"If loving your chaos was a bug, I'd disable the debugger and let the code run forever."</p>
-                    <span class="quote-tag">[ARCHIVE // CODE 05]</span>
-                </div>
-
-                <div class="interactive-card" style="margin-top: 25px;">
-                    <div class="card-title">🔓 UNLOCK RANDOM SECRET QUOTE</div>
-                    <p id="randomQuoteBox" style="font-style: italic; color: var(--gold-accent); margin: 15px 0; min-height: 40px;">
-                        Click the button below to generate a secret encrypted quote...
-                    </p>
-                    <button class="audio-btn" onclick="generateSecretQuote()" style="width: 100%;">GENERATE SECRET QUOTE 🎲</button>
-                </div>
-            </div>
-
-            <!-- PAGE 3: JOKES & CLASSROOM ROASTS -->
-            <div id="tab-roasts" class="content-panel">
-                <h2 class="section-heading">CLASSROOM JOKES & ROAST ARCHIVE</h2>
-                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 25px;">
-                    A collection of inside jokes, classroom observations, and harmless banter reserved strictly for Pranavi:
-                </p>
-
-                <div class="roast-card">
-                    <div class="roast-title">ROAST #01: The Unprovoked Laugher</div>
-                    <p style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.6;">
-                        Pranavi sitting in class during the most serious lecture, suddenly giggling for no reason at all while everyone else looks confused. 😼
-                    </p>
-                </div>
-
-                <div class="roast-card">
-                    <div class="roast-title">ROAST #02: The Sarcasm Masterclass</div>
-                    <p style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.6;">
-                        Asking Pranavi a simple question and receiving a response so sarcastic that even Google search couldn't compute it.
-                    </p>
-                </div>
-
-                <div class="roast-card">
-                    <div class="roast-title">ROAST #03: The 2-Day Wait Scandal</div>
-                    <p style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.6;">
-                        Pranavi waiting 48 hours wondering: "Is he ghosting me or coding?" Answer: He was writing 1000 lines of CSS and JavaScript just to make you smile. 🥷
-                    </p>
-                </div>
-
-                <div class="roast-card">
-                    <div class="roast-title">ROAST #04: Distraction Potential</div>
-                    <p style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.6;">
-                        Scientists confirm that 90% of lost focus in class occurs whenever Pranavi turns around or gives that specific side-eye glance.
-                    </p>
-                </div>
-
-                <div class="interactive-card" style="margin-top: 20px;">
-                    <div class="card-title">🎭 JOKE GENERATOR</div>
-                    <p id="jokeBox" style="color: var(--cyan-accent); margin: 15px 0;">Click below to load another classroom roast!</p>
-                    <button class="option-btn" onclick="cycleJokes()">FETCH NEXT CLASSROOM JOKE 🔁</button>
-                </div>
-            </div>
-
-            <!-- PAGE 4: SUBJECT DOSSIER -->
-            <div id="tab-dossier" class="content-panel">
-                <h2 class="section-heading">CLASSIFIED DOSSIER: SUBJECT PRANAVI</h2>
-                
-                <div class="grid-2">
-                    <div class="interactive-card">
-                        <div class="card-title">🔍 OBSERVED BEHAVIORAL PATTERNS</div>
-                        <ul style="font-size: 0.88rem; line-height: 2; color: #cbd5e1; padding-left: 18px;">
-                            <li>High-level sarcastic response precision.</li>
-                            <li>Spontaneous smiling during quiet class moments.</li>
-                            <li>Mastery over subtle side-eyes and eye-rolls.</li>
-                            <li>Zero tolerance for boring conversations.</li>
-                            <li>Undetected charm frequency operating 24/7.</li>
+            <div id="tab-exams-break" class="tab-pane">
+                <div class="break-info-card">
+                    <h2>📚 Mid-Terms & Exam Break Support Protocol</h2>
+                    <p>Focus mode is activated. No distractions, pure dedication to goals!</p>
+                    <div class="quote-box">
+                        <em>"From not talking for 4 weeks straight, we came to daily 10 mins. Something is better than nothing!"</em>
+                    </div>
+                    <div class="rule-box">
+                        <ul>
+                            <li>✔️ 10-Minute daily timer enforced with precision.</li>
+                            <li>✔️ Full support during exams: Zero pressure, pure trust.</li>
+                            <li>✔️ Post-Saturday silence mode respect.</li>
+                            <li>✔️ Zero stress, full focus on targets and crushing exams!</li>
                         </ul>
                     </div>
-
-                    <div class="interactive-card">
-                        <div class="card-title">🛡️ SYSTEM THREAT EVALUATION</div>
-                        <p style="font-size: 1.8rem; color: var(--pink-accent); font-weight: bold; margin: 12px 0;">CLASS: MAXIMUM THREAT</p>
-                        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.7;">
-                            WARNING: Eye contact longer than 3 seconds may trigger system crash, loss of words, or sudden elevated heartbeat. Proceed with caution.
-                        </p>
-                    </div>
                 </div>
+            </div>
 
-                <div class="interactive-card" style="margin-top: 25px;">
-                    <div class="card-title">📊 REAL-TIME TERMINAL SYSTEM LOGS</div>
-                    <div class="terminal-log" id="terminalLogs">
-                        <div class="log-line">[SYS_INIT]: Initializing stealth handshake with subject Pranavi...</div>
-                        <div class="log-line">[ENCRYPTION]: 4096-bit dark romance key active.</div>
-                        <div class="log-line">[DETECTED]: Target "Pranavi" active on cyber network.</div>
-                        <div class="log-line">[MEMORY_ALLOC]: 99.8% memory dedicated to class memories.</div>
-                        <div class="log-line">[STATUS]: Cyber vault operational and encrypted.</div>
+            <div id="tab-cafe-puzzle" class="tab-pane">
+                <div class="puzzle-wrapper">
+                    <h2>☕ Public Cafe Noise Isolation Engine</h2>
+                    <p>People are shouting and talking around... Turn down the external noise slider to 0% to unlock the silent moment.</p>
+                    
+                    <div class="slider-box">
+                        <label>External Cafe Noise: <span id="noiseDisplay">100%</span></label>
+                        <input type="range" id="noiseSlider" min="0" max="100" value="100">
+                    </div>
+
+                    <div id="cafeEnvStatus" class="status-indicator-box chaotic">
+                        STATUS: LOUD & NOISY CAFE ENVIRONMENT 🔊
+                    </div>
+
+                    <div id="hugRewardBox" class="hug-reward-card hidden">
+                        <div class="hug-icon">🤗</div>
+                        <h3>[SYSTEM UNLOCKED: A Gentle But Tight Hug]</h3>
+                        <p>"Silent eyes, no words needed, looking at each other while the world fades away..."</p>
                     </div>
                 </div>
             </div>
 
-            <!-- PAGE 5: INTERACTIVE PROTOCOLS & GAMES -->
-            <div id="tab-games" class="content-panel">
-                <h2 class="section-heading">INTERACTIVE PROTOCOLS & MINI-GAMES</h2>
-                
-                <div class="sub-heading">PROTOCOL 01: COMPATIBILITY OVERRIDE QUIZ</div>
-                <div class="interactive-card">
-                    <div class="card-title">Question 1: What was your first thought upon unlocking this vault?</div>
-                    <button class="option-btn" onclick="handleChoice('Option 1: Impressed!')">1. "Okay wow, he actually spent two days coding this!" 😼</button>
-                    <button class="option-btn" onclick="handleChoice('Option 2: Smiling!')">2. "I'm smiling at my screen right now..." 🖤</button>
-                    <button class="option-btn" onclick="handleChoice('Option 3: Confused!')">3. "How did he even make a full website for me?!" 🤖</button>
-                </div>
+            <div id="tab-rap-vault" class="tab-pane">
+                <div class="lyrics-card">
+                    <span class="badge-tag">A Classical Dancer & A Writer</span>
+                    <h2>A Dancer's Rhythm in a Writer's Ink</h2>
+                    <div class="lyrics-body" id="rapLyricsContainer">
+                        <p><strong>(Verse 1)</strong><br>
+                        Writing this down 'cause our journey just started,<br>
+                        Scared of the distance, but we're never parted.<br>
+                        Got way too close in a very short time,<br>
+                        Matching our souls like a rhythm and rhyme.<br>
+                        You express with your grace, I express with my pen,<br>
+                        Names linked by fate, yeah, again and again.</p>
 
-                <div class="sub-heading">PROTOCOL 02: NEXT SCHEDULED MEET-UP?</div>
-                <div class="interactive-card">
-                    <button class="option-btn" onclick="triggerConfetti('Coffee / Chill session approved! ☕')">Plan A: Quiet coffee / tea break session</button>
-                    <button class="option-btn" onclick="triggerConfetti('Secret Spotify playlist exchange active! 🎧')">Plan B: Secret Spotify playlist exchange</button>
-                    <button class="option-btn" onclick="triggerConfetti('Classroom roast battle continues! 🤫')">Plan C: Continue roasting each other in class</button>
-                </div>
+                        <p><strong>(Chorus)</strong><br>
+                        Let the whole world burn, just don't turn away,<br>
+                        Need your sweet texts, never leave me on dry, okay?<br>
+                        I won't stop flirting, you keep teasing my heart,<br>
+                        Who cares if we're young? We're a work of pure art.</p>
 
-                <div class="sub-heading">PROTOCOL 03: CYBER FORTUNE TELLER</div>
-                <div class="interactive-card" style="text-align: center;">
-                    <div id="fortuneBox" style="font-size: 1.1rem; color: var(--gold-accent); margin: 20px 0; font-weight: bold;">
-                        Click below to reveal your fortune for tomorrow!
-                    </div>
-                    <button class="btn-submit" onclick="spinFortune()" style="width: 100%;">SPIN FORTUNE WHEEL 🔮</button>
-                </div>
-            </div>
-
-            <!-- PAGE 6: TRANSMIT ENCRYPTED RESPONSE -->
-            <div id="tab-notes" class="content-panel">
-                <h2 class="section-heading">TRANSMIT ENCRYPTED RESPONSE</h2>
-                <div class="interactive-card">
-                    <div class="confess-box">
-                        <p style="font-size: 0.88rem; color: var(--text-muted);">
-                            Write a secret message, reaction, or reply below. It gets stored directly in local terminal cache:
-                        </p>
-                        <textarea id="userNote" class="custom-note" placeholder="Type your honest reaction, thoughts, or secret reply here..."></textarea>
-                        <button class="btn-submit" onclick="saveNote()">TRANSMIT TO VAULT CACHE 🚀</button>
+                        <p><strong>(Verse 2)</strong><br>
+                        No pressure on us, keep the laughter alive,<br>
+                        It’s that cute little attitude that helps me survive.<br>
+                        That "when I say that" look in your eyes,<br>
+                        Clears up my sky, takes away the dark skies.<br>
+                        Stay focused on your goals, go reach for the stars,<br>
+                        'Cause no matter the distance, you're never too far.</p>
                     </div>
                 </div>
-                <div id="noteStatus" style="margin-top: 18px; font-size: 0.9rem; color: var(--success-green); display: none; font-weight: 600;"></div>
             </div>
 
-            <!-- PAGE 7: CREDITS & SYSTEM INFORMATION -->
-            <div id="tab-credits" class="content-panel">
-                <h2 class="section-heading">DEVELOPER CREDITS & ARCHITECTURE</h2>
-                <div class="letter-card">
-                    <h3 style="color: var(--cyan-accent); margin-bottom: 12px;">PROJECT ETERNITY // BUILD DETAILS</h3>
-                    <p style="margin-bottom: 10px;"><strong>Lead Engineer:</strong> Shivam 🥷</p>
-                    <p style="margin-bottom: 10px;"><strong>Dedicated To:</strong> Pranavi 🖤</p>
-                    <p style="margin-bottom: 10px;"><strong>Lines of Code:</strong> 1000+ Lines (HTML5 / CSS3 / JavaScript)</p>
-                    <p style="margin-bottom: 10px;"><strong>Build Duration:</strong> 48 Hours of Quiet Coding</p>
-                    <p style="margin-bottom: 10px;"><strong>Aesthetic Framework:</strong> Cyberpunk / Dark Romance / Terminal UI</p>
-                    <p style="margin-bottom: 0;"><strong>Status:</strong> Permanently Deployed on GitHub Pages</p>
+            <div id="tab-loyalty" class="tab-pane">
+                <div class="break-info-card">
+                    <h2>🔒 Unbreakable Loyalty & Trust Status</h2>
+                    <p>Letter Statement: "Will u trust me let the world burn away..."</p>
+                    <div class="quote-box">
+                        <em>"No backstabbers, no drama. Pure trust, high goals, and zero pressure."</em>
+                    </div>
+                    <div class="status-indicator-box" style="background: rgba(0, 255, 102, 0.15); border-color: #00ff66; color: #00ff66; margin-top: 15px;">
+                        LOYALTY RATING: 100% SECURE & ENCRYPTED
+                    </div>
                 </div>
             </div>
 
-        </div>
+        </main>
     </div>
 
-    <!-- JAVASCRIPT ENGINE -->
-    <script>
-        // Matrix Rain Background Animation
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-
-        const chars = '0123456789ABCDEFPRANAVI♡♥🥷';
-        const fontSize = 14;
-        let columns = Math.floor(canvas.width / fontSize);
-        let drops = Array(columns).fill(1);
-
-        function drawMatrix() {
-            ctx.fillStyle = 'rgba(3, 3, 5, 0.12)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#ff2a6d';
-            ctx.font = fontSize + 'px monospace';
-
-            for (let i = 0; i < drops.length; i++) {
-                const text = chars.charAt(Math.floor(Math.random() * chars.length));
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
-                drops[i]++;
-            }
-        }
-        setInterval(drawMatrix, 33);
-
-        // Vault Passcode Unlock Logic
-        function unlockVault() {
-            const pass = document.getElementById('passInput').value;
-            
-            document.getElementById('lock-screen').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'flex';
-
-            confetti({
-                particleCount: 120,
-                spread: 80,
-                origin: { y: 0.6 },
-                colors: ['#ff2a6d', '#05d9e8', '#ffd700']
-            });
-
-            addLog('[OVERRIDE]: Keycode accepted ("' + (pass || 'BYPASS') + '"). Welcome Pranavi.');
-        }
-
-        document.getElementById('passInput').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') unlockVault();
-        });
-
-        function showHint() {
-            alert("Hint: Type literally anything you want, or just click ACCESS TERMINAL! 😼");
-        }
-
-        // Tab Switcher
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.content-panel').forEach(panel => panel.classList.remove('active'));
-
-            event.currentTarget.classList.add('active');
-            document.getElementById('tab-' + tabId).classList.add('active');
-
-            addLog('[NAVIGATE]: Accessed module //' + tabId.toUpperCase());
-        }
-
-        // Sync Calibration Meter
-        function runAnalysis() {
-            const meter = document.getElementById('loveMeter');
-            meter.style.width = '0%';
-            setTimeout(() => {
-                meter.style.width = '100%';
-            }, 100);
-            
-            setTimeout(() => {
-                confetti({ particleCount: 70, spread: 60 });
-                alert("CALIBRATION COMPLETE: 100% Aura Alignment Detected! 🖤");
-            }, 2100);
-        }
-
-        // Secret Quotes Generator Array
-        const secretQuotes = [
-            "\"You have a way of making simple class moments feel like movie scenes.\"",
-            "\"If I had a line of code for every time you crossed my mind, this website would crash from infinite loops.\"",
-            "\"Dark mode enabled because my world gets too bright whenever you laugh.\"",
-            "\"You're the only person who can confuse me and make me smile at the exact same time.\"",
-            "\"Two days of coding was 100% worth it just to hear your reaction to this vault.\""
-        ];
-
-        function generateSecretQuote() {
-            const quote = secretQuotes[Math.floor(Math.random() * secretQuotes.length)];
-            document.getElementById('randomQuoteBox').innerText = quote;
-            addLog('[QUOTE_GEN]: Secret quote unlocked.');
-        }
-
-        // Classroom Jokes Array
-        const jokes = [
-            "Pranavi trying to act innocent after saying the most unhinged thing in class. 😼",
-            "Teacher: 'Why are you guys laughing?' Pranavi & Me: *silent side-eye intense glance*",
-            "Legend says if you say 'Pranavi' 3 times in front of a mirror, she'll appear and roast your outfit.",
-            "Pranavi's phone battery: 1%. Pranavi's sarcasm battery: 1000% charged."
-        ];
-        let jokeIdx = 0;
-
-        function cycleJokes() {
-            jokeIdx = (jokeIdx + 1) % jokes.length;
-            document.getElementById('jokeBox').innerText = jokes[jokeIdx];
-            addLog('[JOKE_CYCLE]: Loaded joke #' + (jokeIdx + 1));
-        }
-
-        // Fortunes Array
-        const fortunes = [
-            "🔮 Tomorrow's Fortune: You will catch yourself smiling in class for no clear reason.",
-            "🔮 Tomorrow's Fortune: A secret Spotify playlist exchange is in your near future.",
-            "🔮 Tomorrow's Fortune: High probability of receiving another unexpected compliment.",
-            "🔮 Tomorrow's Fortune: You will win tomorrow's sarcasm roast battle."
-        ];
-
-        function spinFortune() {
-            const fortune = fortunes[Math.floor(Math.random() * fortunes.length)];
-            document.getElementById('fortuneBox').innerText = fortune;
-            confetti({ particleCount: 40, spread: 40 });
-            addLog('[FORTUNE_SPIN]: Fortune generated.');
-        }
-
-        // Interactivity Handlers
-        function handleChoice(msg) {
-            alert('Protocol Recorded: ' + msg + ' 🖤');
-            addLog('[CHOICE_RECORDED]: ' + msg);
-        }
-
-        function triggerConfetti(text) {
-            confetti({ particleCount: 90, spread: 90, colors: ['#ff2a6d', '#05d9e8'] });
-            alert('PROTOCOL EXECUTION: ' + text);
-            addLog('[EVENT_TRIGGERED]: ' + text);
-        }
-
-        // Note Saver
-        function saveNote() {
-            const txt = document.getElementById('userNote').value;
-            const status = document.getElementById('noteStatus');
-            if (!txt.trim()) {
-                alert('Please write something before transmitting!');
-                return;
-            }
-            status.style.display = 'block';
-            status.innerText = '✔ ENCRYPTED RESPONSE STORED IN TERMINAL MEMORY CACHE!';
-            addLog('[TRANSMISSION]: Stored reaction note (' + txt.length + ' chars)');
-            document.getElementById('userNote').value = '';
-        }
-
-        // Terminal Log Append Helper
-        function addLog(text) {
-            const logs = document.getElementById('terminalLogs');
-            if (logs) {
-                const line = document.createElement('div');
-                line.className = 'log-line';
-                line.innerText = text;
-                logs.appendChild(line);
-                logs.scrollTop = logs.scrollHeight;
-            }
-        }
-
-        // Web Audio Synthesizer
-        let audioCtx = null;
-        let isAudioPlaying = false;
-        let synthInterval = null;
-
-        function toggleAudio() {
-            const btn = document.getElementById('audioToggle');
-            if (!isAudioPlaying) {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                audioCtx.resume();
-                isAudioPlaying = true;
-                btn.innerText = "🔊 AUDIO: ON";
-                btn.style.borderColor = "var(--pink-accent)";
-                btn.style.color = "var(--pink-accent)";
-
-                synthInterval = setInterval(() => {
-                    if (!isAudioPlaying) return;
-                    let osc = audioCtx.createOscillator();
-                    let gain = audioCtx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(110 + Math.random() * 70, audioCtx.currentTime);
-                    gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 1.5);
-                }, 1200);
-            } else {
-                isAudioPlaying = false;
-                if (synthInterval) clearInterval(synthInterval);
-                btn.innerText = "🔊 AUDIO: OFF";
-                btn.style.borderColor = "var(--cyan-accent)";
-                btn.style.color = "var(--cyan-accent)";
-            }
-        }
-    </script>
+    <script src="app.js"></script>
 </body>
-</html>
+</html>  
+
+
+/* ==========================================================================
+   PROJECT ETERNITY V5.0 CORE STYLESHEET (MASSIVE UI EXPANSION)
+   ========================================================================== */
+
+:root {
+    --bg-main: #0a0b10;
+    --card-bg: rgba(18, 20, 29, 0.9);
+    --border-color: rgba(255, 42, 109, 0.35);
+    --primary-neon: #ff2a6d;
+    --secondary-neon: #05d9e8;
+    --accent-green: #00ff66;
+    --text-primary: #e0f7fc;
+    --text-secondary: #8892b0;
+    --font-mono: 'Fira Code', monospace;
+    --font-sans: 'Outfit', sans-serif;
+    --glow-shadow: 0 0 25px rgba(255, 42, 109, 0.35);
+}
+
+body.light-pastel-theme {
+    --bg-main: #f0f4f9;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --border-color: rgba(255, 107, 139, 0.4);
+    --primary-neon: #ff6b8b;
+    --secondary-neon: #4a90e2;
+    --accent-green: #2ed573;
+    --text-primary: #2d3436;
+    --text-secondary: #636e72;
+    --glow-shadow: 0 10px 25px rgba(255, 107, 139, 0.15);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    transition: background 0.4s ease, color 0.4s ease;
+}
+
+#matrixCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    opacity: 0.15;
+}
+
+.main-wrapper {
+    width: 92%;
+    max-width: 1050px;
+    margin: 20px auto;
+}
+
+.cyber-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 15px 25px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: var(--glow-shadow);
+    backdrop-filter: blur(10px);
+}
+
+.brand-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-mono);
+}
+
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent-green);
+    box-shadow: 0 0 10px var(--accent-green);
+}
+
+.badge {
+    background: var(--primary-neon);
+    color: #fff;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.cyber-btn {
+    font-family: var(--font-mono);
+    padding: 10px 18px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.cyber-btn.outline {
+    background: transparent;
+    border: 1px solid var(--secondary-neon);
+    color: var(--secondary-neon);
+}
+
+.cyber-btn.glowing {
+    background: var(--primary-neon);
+    color: #fff;
+    box-shadow: 0 0 15px var(--primary-neon);
+}
+
+.cyber-btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+.vault-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 35px;
+    box-shadow: var(--glow-shadow);
+    backdrop-filter: blur(12px);
+    transition: all 0.4s ease;
+}
+
+.auth-card {
+    text-align: center;
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+.avatar-ring {
+    font-size: 45px;
+    margin-bottom: 15px;
+    display: inline-block;
+    padding: 15px;
+    border-radius: 50%;
+    background: rgba(255, 42, 109, 0.1);
+    border: 1px solid var(--primary-neon);
+}
+
+.main-title {
+    font-size: 28px;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    color: var(--primary-neon);
+}
+
+.cyber-desc {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.auth-input-group {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.auth-input-group input {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--secondary-neon);
+    padding: 12px 18px;
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    width: 65%;
+}
+
+.stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.stat-item {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 12px 18px;
+    border-radius: 10px;
+    border-left: 3px solid var(--secondary-neon);
+}
+
+.stat-label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+}
+
+.stat-value {
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 4px;
+    display: block;
+}
+
+.text-green { color: var(--accent-green); }
+.text-pink { color: var(--primary-neon); }
+
+.cyber-tabs {
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 25px;
+    overflow-x: auto;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 12px 20px;
+    font-family: var(--font-mono);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+    color: var(--primary-neon);
+    border-bottom-color: var(--primary-neon);
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+    animation: fadeIn 0.4s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Terminal Styles */
+.terminal-box {
+    background: #000;
+    border-radius: 10px;
+    border: 1px solid var(--secondary-neon);
+    overflow: hidden;
+}
+
+.terminal-head {
+    background: #111;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot.red { background: #ff5f56; }
+.dot.yellow { background: #ffbd2e; }
+.dot.green { background: #27c93f; }
+
+.term-title {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-left: 10px;
+}
+
+.terminal-content {
+    padding: 20px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    max-height: 380px;
+    overflow-y: auto;
+    line-height: 1.8;
+}
+
+.log-entry { margin-bottom: 6px; }
+.log-user { color: var(--secondary-neon); }
+.log-pranavi { color: var(--primary-neon); }
+
+/* Puzzle & Break Cards */
+.slider-box { margin: 25px 0; }
+.slider-box input { width: 100%; margin-top: 10px; }
+
+.status-indicator-box {
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-weight: bold;
+    background: rgba(255, 42, 109, 0.15);
+    border: 1px solid var(--primary-neon);
+    color: var(--primary-neon);
+}
+
+.hug-reward-card {
+    text-align: center;
+    padding: 30px;
+    margin-top: 20px;
+    background: rgba(0, 255, 102, 0.1);
+    border: 1px solid var(--accent-green);
+    border-radius: 12px;
+}
+
+.hug-icon { font-size: 50px; margin-bottom: 10px; }
+
+.break-info-card, .lyrics-card {
+    line-height: 1.8;
+}
+
+.quote-box {
+    background: rgba(0, 0, 0, 0.25);
+    padding: 15px;
+    border-left: 4px solid var(--primary-neon);
+    margin: 15px 0;
+    border-radius: 4px;
+}
+
+.rule-box ul {
+    list-style: none;
+    margin-top: 10px;
+}
+
+.rule-box li {
+    margin-bottom: 8px;
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+}
+
+.badge-tag {
+    background: rgba(5, 217, 232, 0.2);
+    color: var(--secondary-neon);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+}
+
+.lyrics-body p {
+    margin-top: 15px;
+}
+
+.hidden { display: none !important; }
+.error-msg { color: #ff5f56; font-size: 12px; font-family: var(--font-mono); margin-top: 8px; }
+.hint-link { color: var(--text-secondary); font-size: 11px; margin-top: 10px; cursor: pointer; text-decoration: underline; }
+
+
+
+
+/* ==========================================================================
+   PROJECT ETERNITY V5.0 CORE JS ENGINE (MASSIVE SCRIPT EXPANSE)
+   ========================================================================== */
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    // 1. MATRIX CANVAS BACKGROUND ANIMATION
+    const canvas = document.getElementById('matrixCanvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const chars = 'PRANAVI100903LOVEETERNITYVAULT01';
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = Array(Math.floor(columns)).fill(1);
+
+    function drawMatrix() {
+        ctx.fillStyle = 'rgba(10, 11, 16, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#ff2a6d';
+        ctx.font = fontSize + 'px monospace';
+
+        for (let i = 0; i < drops.length; i++) {
+            const text = chars.charAt(Math.floor(Math.random() * chars.length));
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
+            }
+            drops[i]++;
+        }
+    }
+    setInterval(drawMatrix, 33);
+
+    // 2. THEME SWITCHER
+    const themeBtn = document.getElementById('themeToggleBtn');
+    themeBtn.addEventListener('click', () => {
+        document.body.classList.toggle('light-pastel-theme');
+        themeBtn.innerText = document.body.classList.contains('light-pastel-theme') 
+            ? 'THEME: PASTEL LIGHT 🌸' 
+            : 'THEME: CHILL NEON';
+    });
+
+    // 3. AUTHENTICATION & PASSCODE GATEWAY
+    const unlockBtn = document.getElementById('unlockBtn');
+    const passcodeVal = document.getElementById('vaultPasscode');
+    const authCard = document.getElementById('authGateway');
+    const dashboard = document.getElementById('vaultDashboard');
+    const errorMsg = document.getElementById('authErrorMsg');
+
+    unlockBtn.addEventListener('click', () => {
+        const input = passcodeVal.value.trim().toLowerCase();
+        // Accepts secret keys 'pranavi' or '0903'
+        if (input === 'pranavi' || input === '0903') {
+            authCard.classList.add('hidden');
+            dashboard.classList.remove('hidden');
+            initializeByeLogs();
+        } else {
+            errorMsg.classList.remove('hidden');
+        }
+    });
+
+    // 4. TAB NAVIGATION SYSTEM
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabPanes.forEach(p => p.classList.remove('active'));
+
+            btn.classList.add('active');
+            document.getElementById(btn.dataset.tab).classList.add('active');
+        });
+    });
+
+    // 5. DYNAMIC BYE / MISS U CHATTER LOG ENGINE
+    function initializeByeLogs() {
+        const consoleBox = document.getElementById('chatConsole');
+        const logs = [
+            { sender: 'log-pranavi', text: '[22:28] Pranavi: bye babe good night' },
+            { sender: 'log-user', text: '[22:28] Bagad billa: go nd sleep' },
+            { sender: 'log-pranavi', text: '[22:29] Pranavi: noooo i told u not to reply' },
+            { sender: 'log-pranavi', text: '[22:29] Pranavi: my bf' },
+            { sender: 'log-user', text: '[22:29] Bagad billa: ok' },
+            { sender: 'log-user', text: '[22:30] Bagad billa: btw i wanna say if u agree on this we will talk daily 10 min jus 10 mins' },
+            { sender: 'log-pranavi', text: '[22:30] Pranavi: i am ok buy will fate and our hearts agree??' },
+            { sender: 'log-user', text: '[22:30] Bagad billa: yea they have to agree' },
+            { sender: 'log-pranavi', text: '[22:30] Pranavi: from not talking to 4 weeks straight weve come to daily 10 min' },
+            { sender: 'log-user', text: '[22:30] Bagad billa: something is better then nthng' },
+            { sender: 'log-pranavi', text: '[22:31] Pranavi: ok lets see but its only for this week' },
+            { sender: 'log-pranavi', text: '[22:31] Pranavi: from next sat no talking' },
+            { sender: 'log-pranavi', text: '[22:31] Pranavi: ilysm byee' },
+            { sender: 'log-user', text: '[05:25 AM] Bagad billa: Hey, good morning! ☀️ Just wanted to quickly remind you to completely focus on your exams...' },
+            { sender: 'log-pranavi', text: '[05:47 AM] Pranavi: i lovv it ❤️' },
+            { sender: 'log-user', text: '[05:47 AM] Bagad billa: And I luv u' },
+            { sender: 'log-pranavi', text: '[05:49 AM] Pranavi: Uuuz, Go to ur school! First go offline! Byee' },
+            { sender: 'log-pranavi', text: '[05:54 AM] Pranavi: okkk byee 🫶' },
+            { sender: 'log-user', text: '[SYSTEM LOG]: Trust key verified. Loyalty unbroken.' }
+        ];
+
+        consoleBox.innerHTML = '';
+        logs.forEach((item, index) => {
+            setTimeout(() => {
+                const div = document.createElement('div');
+                div.className = `log-entry ${item.sender}`;
+                div.innerText = item.text;
+                consoleBox.appendChild(div);
+                consoleBox.scrollTop = consoleBox.scrollHeight;
+            }, index * 350);
+        });
+    }
+
+    // 6. CAFE NOISE PUZZLE ENGINE
+    const noiseSlider = document.getElementById('noiseSlider');
+    const noiseDisplay = document.getElementById('noiseDisplay');
+    const envStatus = document.getElementById('cafeEnvStatus');
+    const hugCard = document.getElementById('hugRewardBox');
+
+    noiseSlider.addEventListener('input', (e) => {
+        const val = e.target.value;
+        noiseDisplay.innerText = `${val}%`;
+
+        if (parseInt(val) === 0) {
+            envStatus.innerText = 'STATUS: SILENT CAFE ENVIRONMENT ACHIEVED ☕✨';
+            envStatus.style.background = 'rgba(0, 255, 102, 0.15)';
+            envStatus.style.borderColor = '#00ff66';
+            envStatus.style.color = '#00ff66';
+            hugCard.classList.remove('hidden');
+        } else {
+            envStatus.innerText = 'STATUS: LOUD & NOISY CAFE ENVIRONMENT 🔊';
+            envStatus.style.background = 'rgba(255, 42, 109, 0.15)';
+            envStatus.style.borderColor = '#ff2a6d';
+            envStatus.style.color = '#ff2a6d';
+            hugCard.classList.add('hidden');
+        }
+    });
+});
+            
