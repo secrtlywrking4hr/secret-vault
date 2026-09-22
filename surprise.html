@@ -7,10 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        /* ==========================================================================
-           PART 1: ADVANCED CYBERPUNK STYLESHEET ENGINE (MASSIVE UI EXPANSE)
-           ========================================================================== */
-
         :root {
             --bg-main: #0a0b10;
             --card-bg: rgba(18, 20, 29, 0.9);
@@ -23,8 +19,6 @@
             --font-mono: 'Fira Code', monospace;
             --font-sans: 'Outfit', sans-serif;
             --glow-shadow: 0 0 25px rgba(255, 42, 109, 0.35);
-            --glow-secondary: 0 0 20px rgba(5, 217, 232, 0.3);
-            --glow-green: 0 0 20px rgba(0, 255, 102, 0.4);
         }
 
         body.light-pastel-theme {
@@ -37,16 +31,9 @@
             --text-primary: #2d3436;
             --text-secondary: #636e72;
             --glow-shadow: 0 10px 25px rgba(255, 107, 139, 0.15);
-            --glow-secondary: 0 10px 20px rgba(74, 144, 226, 0.15);
-            --glow-green: 0 10px 20px rgba(46, 213, 115, 0.2);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             background-color: var(--bg-main);
@@ -58,221 +45,146 @@
             align-items: center;
             overflow-x: hidden;
             transition: background 0.4s ease, color 0.4s ease;
-            position: relative;
         }
 
-        /* Matrix Canvas Background */
         #matrixCanvas {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
             z-index: -1;
-            opacity: 0.18;
-            pointer-events: none;
+            opacity: 0.15;
         }
 
         .main-wrapper {
-            width: 94%;
-            max-width: 1100px;
+            width: 92%;
+            max-width: 1050px;
             margin: 20px auto;
-            position: relative;
-            z-index: 10;
         }
 
-        /* Header Navigation */
         .cyber-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            padding: 16px 28px;
-            border-radius: 14px;
-            margin-bottom: 22px;
+            padding: 15px 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
             box-shadow: var(--glow-shadow);
-            backdrop-filter: blur(12px);
-            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
 
         .brand-info {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             font-family: var(--font-mono);
         }
 
         .status-indicator {
-            width: 12px;
-            height: 12px;
+            width: 10px; height: 10px;
             border-radius: 50%;
             background: var(--accent-green);
-            box-shadow: var(--glow-green);
-            animation: pulseGreen 2s infinite ease-in-out;
-        }
-
-        @keyframes pulseGreen {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0.7); }
-            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(0, 255, 102, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0); }
-        }
-
-        .sys-title {
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            font-size: 14px;
-            color: var(--text-primary);
         }
 
         .badge {
             background: var(--primary-neon);
             color: #fff;
             font-size: 11px;
-            padding: 4px 10px;
-            border-radius: 6px;
+            padding: 3px 8px;
+            border-radius: 4px;
             font-weight: bold;
-            letter-spacing: 1px;
-            box-shadow: var(--glow-shadow);
         }
 
         .cyber-btn {
             font-family: var(--font-mono);
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 10px 18px;
+            border-radius: 6px;
             border: none;
             cursor: pointer;
             font-weight: 600;
-            font-size: 12px;
-            letter-spacing: 0.8px;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            transition: all 0.3s ease;
         }
 
         .cyber-btn.outline {
             background: transparent;
             border: 1px solid var(--secondary-neon);
             color: var(--secondary-neon);
-            box-shadow: var(--glow-secondary);
         }
 
         .cyber-btn.glowing {
             background: var(--primary-neon);
             color: #fff;
-            box-shadow: var(--glow-shadow);
+            box-shadow: 0 0 15px var(--primary-neon);
         }
 
-        .cyber-btn:hover {
-            transform: translateY(-3px) scale(1.02);
-            opacity: 0.95;
-        }
-
-        .cyber-btn:active {
-            transform: translateY(1px) scale(0.98);
-        }
-
-        /* Vault Master Card Layout */
         .vault-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 40px;
+            border-radius: 16px;
+            padding: 35px;
             box-shadow: var(--glow-shadow);
-            backdrop-filter: blur(16px);
-            transition: all 0.4s ease;
+            backdrop-filter: blur(12px);
         }
 
         .auth-card {
             text-align: center;
-            max-width: 680px;
+            max-width: 650px;
             margin: 0 auto;
-            position: relative;
-            overflow: hidden;
         }
 
         .avatar-ring {
-            font-size: 50px;
-            margin-bottom: 18px;
+            font-size: 45px;
+            margin-bottom: 15px;
             display: inline-block;
-            padding: 18px;
+            padding: 15px;
             border-radius: 50%;
-            background: rgba(255, 42, 109, 0.12);
-            border: 2px solid var(--primary-neon);
-            box-shadow: var(--glow-shadow);
-            animation: floatIcon 3s ease-in-out infinite;
-        }
-
-        @keyframes floatIcon {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+            background: rgba(255, 42, 109, 0.1);
+            border: 1px solid var(--primary-neon);
         }
 
         .main-title {
-            font-size: 32px;
-            font-weight: 800;
+            font-size: 28px;
             letter-spacing: 2px;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             color: var(--primary-neon);
-            text-shadow: 0 0 15px rgba(255, 42, 109, 0.4);
         }
 
         .cyber-desc {
             color: var(--text-secondary);
-            line-height: 1.7;
-            font-size: 15px;
-            margin-bottom: 28px;
-            max-width: 540px;
-            margin-left: auto;
-            margin-right: auto;
+            line-height: 1.6;
+            margin-bottom: 25px;
         }
 
         .auth-input-group {
             display: flex;
-            gap: 14px;
+            gap: 12px;
             justify-content: center;
-            margin-bottom: 18px;
+            margin-bottom: 15px;
         }
 
         .auth-input-group input {
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.3);
             border: 1px solid var(--secondary-neon);
-            padding: 14px 20px;
-            border-radius: 10px;
+            padding: 12px 18px;
+            border-radius: 8px;
             color: var(--text-primary);
             font-family: var(--font-mono);
-            font-size: 14px;
-            width: 68%;
-            outline: none;
-            box-shadow: inset 0 0 10px rgba(5, 217, 232, 0.1);
-            transition: all 0.3s ease;
+            width: 65%;
         }
 
-        .auth-input-group input:focus {
-            border-color: var(--primary-neon);
-            box-shadow: 0 0 15px rgba(255, 42, 109, 0.3);
-        }
-
-        /* Top Dashboard Stats Grid */
         .stats-bar {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 18px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
         .stat-item {
-            background: rgba(0, 0, 0, 0.25);
-            padding: 16px 20px;
-            border-radius: 12px;
-            border-left: 4px solid var(--secondary-neon);
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease;
-        }
-
-        .stat-item:hover {
-            transform: translateY(-2px);
+            background: rgba(0, 0, 0, 0.2);
+            padding: 12px 18px;
+            border-radius: 10px;
+            border-left: 3px solid var(--secondary-neon);
         }
 
         .stat-label {
@@ -280,98 +192,61 @@
             font-size: 11px;
             color: var(--text-secondary);
             font-family: var(--font-mono);
-            letter-spacing: 1px;
         }
 
         .stat-value {
-            font-size: 16px;
-            font-weight: 700;
-            margin-top: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            margin-top: 4px;
             display: block;
-            letter-spacing: 0.5px;
         }
 
         .text-green { color: var(--accent-green); }
         .text-pink { color: var(--primary-neon); }
 
-        /* Dashboard Cyber Tabs Header */
         .cyber-tabs {
             display: flex;
-            gap: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-            margin-bottom: 30px;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 25px;
             overflow-x: auto;
-            padding-bottom: 8px;
-        }
-
-        .cyber-tabs::-webkit-scrollbar {
-            height: 4px;
-        }
-
-        .cyber-tabs::-webkit-scrollbar-thumb {
-            background: var(--primary-neon);
-            border-radius: 4px;
         }
 
         .tab-btn {
             background: transparent;
             border: none;
             color: var(--text-secondary);
-            padding: 14px 24px;
+            padding: 12px 20px;
             font-family: var(--font-mono);
-            font-size: 13px;
-            font-weight: 600;
             cursor: pointer;
-            border-bottom: 3px solid transparent;
+            border-bottom: 2px solid transparent;
             white-space: nowrap;
-            transition: all 0.3s ease;
-            border-radius: 6px 6px 0 0;
-        }
-
-        .tab-btn:hover {
-            color: var(--text-primary);
-            background: rgba(255, 255, 255, 0.03);
         }
 
         .tab-btn.active {
             color: var(--primary-neon);
             border-bottom-color: var(--primary-neon);
-            background: rgba(255, 42, 109, 0.08);
         }
 
-        .tab-pane {
-            display: none;
-        }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
 
-        .tab-pane.active {
-            display: block;
-            animation: slideUpFade 0.4s ease forwards;
-        }
-
-        @keyframes slideUpFade {
-            from { opacity: 0; transform: translateY(14px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Terminal Console Box */
         .terminal-box {
-            background: #050608;
-            border-radius: 12px;
+            background: #000;
+            border-radius: 10px;
             border: 1px solid var(--secondary-neon);
             overflow: hidden;
-            box-shadow: 0 0 20px rgba(5, 217, 232, 0.15);
         }
 
         .terminal-head {
-            background: #10121a;
-            padding: 12px 18px;
+            background: #111;
+            padding: 10px 15px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            gap: 8px;
         }
 
-        .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
         .dot.red { background: #ff5f56; }
         .dot.yellow { background: #ffbd2e; }
         .dot.green { background: #27c93f; }
@@ -381,167 +256,109 @@
             font-size: 12px;
             color: var(--text-secondary);
             margin-left: 10px;
-            letter-spacing: 0.8px;
         }
 
         .terminal-content {
-            padding: 24px;
+            padding: 20px;
             font-family: var(--font-mono);
-            font-size: 13.5px;
-            max-height: 420px;
+            font-size: 13px;
+            max-height: 380px;
             overflow-y: auto;
-            line-height: 1.85;
+            line-height: 1.8;
         }
 
-        .log-entry { margin-bottom: 8px; word-break: break-word; }
+        .log-entry { margin-bottom: 6px; }
         .log-user { color: var(--secondary-neon); }
         .log-pranavi { color: var(--primary-neon); }
 
-        /* Slider Engine UI */
-        .slider-box {
-            margin: 30px 0;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .slider-box label {
-            display: block;
-            font-family: var(--font-mono);
-            font-size: 14px;
-            margin-bottom: 12px;
-            color: var(--text-primary);
-        }
-
-        .slider-box input[type="range"] {
-            width: 100%;
-            height: 8px;
-            border-radius: 4px;
-            background: #1a1d28;
-            outline: none;
-            accent-color: var(--primary-neon);
-            cursor: pointer;
-        }
+        .slider-box { margin: 25px 0; }
+        .slider-box input { width: 100%; margin-top: 10px; }
 
         .status-indicator-box {
-            padding: 18px;
-            border-radius: 10px;
+            padding: 15px;
+            border-radius: 8px;
             text-align: center;
             font-family: var(--font-mono);
-            font-weight: 700;
-            font-size: 13px;
-            letter-spacing: 1px;
-            background: rgba(255, 42, 109, 0.12);
+            font-weight: bold;
+            background: rgba(255, 42, 109, 0.15);
             border: 1px solid var(--primary-neon);
             color: var(--primary-neon);
-            transition: all 0.3s ease;
         }
 
         .hug-reward-card {
             text-align: center;
-            padding: 35px;
-            margin-top: 25px;
-            background: rgba(0, 255, 102, 0.08);
+            padding: 30px;
+            margin-top: 20px;
+            background: rgba(0, 255, 102, 0.1);
             border: 1px solid var(--accent-green);
-            border-radius: 14px;
-            box-shadow: var(--glow-green);
+            border-radius: 12px;
         }
 
-        .hug-icon { font-size: 55px; margin-bottom: 12px; }
-
-        .break-info-card, .lyrics-card {
-            line-height: 1.85;
-            font-size: 15px;
-        }
-
+        .hug-icon { font-size: 50px; margin-bottom: 10px; }
         .quote-box {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 18px 22px;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 15px;
             border-left: 4px solid var(--primary-neon);
-            margin: 20px 0;
-            border-radius: 6px;
-            font-style: italic;
-            color: var(--text-primary);
+            margin: 15px 0;
+            border-radius: 4px;
         }
 
-        .rule-box ul {
-            list-style: none;
-            margin-top: 14px;
-        }
+        .rule-box ul { list-style: none; margin-top: 10px; }
+        .rule-box li { margin-bottom: 8px; font-family: var(--font-mono); color: var(--text-secondary); }
+        .hidden { display: none !important; }
+        .error-msg { color: #ff5f56; font-size: 12px; font-family: var(--font-mono); margin-top: 8px; }
 
-        .rule-box li {
-            margin-bottom: 12px;
-            font-family: var(--font-mono);
-            font-size: 13.5px;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .lyrics-card {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px dashed var(--secondary-neon);
         }
-
+        .lyrics-body {
+            line-height: 1.9;
+            font-size: 15px;
+            margin-top: 15px;
+        }
         .badge-tag {
-            background: rgba(5, 217, 232, 0.15);
+            background: rgba(5, 217, 232, 0.2);
             color: var(--secondary-neon);
-            padding: 5px 12px;
-            border-radius: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
             font-size: 12px;
             font-family: var(--font-mono);
-            display: inline-block;
-            margin-bottom: 12px;
         }
-
-        .lyrics-body p {
-            margin-top: 18px;
-            color: var(--text-primary);
-        }
-
-        .hidden { display: none !important; }
-        .error-msg { color: #ff5f56; font-size: 12px; font-family: var(--font-mono); margin-top: 10px; }
-        .hint-link { color: var(--text-secondary); font-size: 12px; margin-top: 14px; cursor: pointer; text-decoration: underline; }
     </style>
 </head>
-<body class="dark-neon-theme">
+<body>
 
     <canvas id="matrixCanvas"></canvas>
 
     <div class="main-wrapper">
-        <!-- HEADER UI -->
         <header class="cyber-header">
             <div class="brand-info">
                 <span class="status-indicator"></span>
                 <span class="sys-title">SYSTEM://VAULT.PRANAVI.EXE</span>
                 <span class="badge">V5.0.0-PROD</span>
             </div>
-            <div class="nav-actions">
-                <button id="themeToggleBtn" class="cyber-btn outline">THEME: CHILL NEON</button>
-            </div>
+            <button id="themeToggleBtn" class="cyber-btn outline">THEME: CHILL NEON</button>
         </header>
 
-        <!-- AUTH GATEWAY UI -->
         <section id="authGateway" class="vault-card auth-card">
-            <div class="avatar-ring"><span class="ninja-icon">🥷</span></div>
+            <div class="avatar-ring"><span>🥷</span></div>
             <h1 class="main-title">RESTRICTED CYBER VAULT</h1>
-            <p class="cyber-desc">
-                This encrypted terminal was engineered exclusively for the classical dancer who spent days waiting while I was quietly building something special 🥷.
-            </p>
+            <p class="cyber-desc">This encrypted environment was engineered exclusively for the classical dancer 🥷.</p>
             <div class="auth-input-group">
                 <input type="password" id="vaultPasscode" placeholder="ENTER SECRET KEYCODE..." autocomplete="off">
                 <button id="unlockBtn" class="cyber-btn glowing">ACCESS TERMINAL 🖤</button>
             </div>
-            <p id="authErrorMsg" class="error-msg hidden">Invalid Secret Passcode Key!</p>
-            <div class="hint-link">Need a hint? (Enter her name or 0903)</div>
-        </section>    
+            <p id="authErrorMsg" class="error-msg hidden">Invalid Passcode! (Hint: pranavi or 0903)</p>
+        </section>
 
-
-
-<!-- MAIN DASHBOARD CONTENT (UNLOCKED STATE) -->
         <main id="vaultDashboard" class="vault-card dashboard-card hidden">
-            <!-- TOP SYSTEM METRICS -->
             <div class="stats-bar">
                 <div class="stat-item">
                     <span class="stat-label">STATUS</span>
-                    <span class="stat-value highlight">EXAM BREAK 📚</span>
+                    <span class="stat-value text-pink">EXAM BREAK 📚</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-label">DAILY LIMIT</span>
@@ -557,7 +374,6 @@
                 </div>
             </div>
 
-            <!-- TABS NAVIGATION -->
             <nav class="cyber-tabs">
                 <button class="tab-btn active" data-tab="tab-bye-logs">01. Extended Bye & Miss U Logs</button>
                 <button class="tab-btn" data-tab="tab-exams-break">02. Mid-Terms & Silence Protocol</button>
@@ -566,24 +382,20 @@
                 <button class="tab-btn" data-tab="tab-loyalty">05. Unbreakable Loyalty Vault</button>
             </nav>
 
-            <!-- TAB 1: EXTENDED BYE & CHATTER LOGS -->
             <div id="tab-bye-logs" class="tab-pane active">
                 <div class="terminal-box">
                     <div class="terminal-head">
                         <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
                         <span class="term-title">DISCORD_CHATTER_ARCHIVE.LOG</span>
                     </div>
-                    <div id="chatConsole" class="terminal-content">
-                        <!-- JS Typewriter Output -->
-                    </div>
+                    <div id="chatConsole" class="terminal-content"></div>
                 </div>
             </div>
 
-            <!-- TAB 2: EXAM BREAK SUPPORT PROTOCOL -->
             <div id="tab-exams-break" class="tab-pane">
                 <div class="break-info-card">
                     <h2>📚 Mid-Terms & Exam Break Support Protocol</h2>
-                    <p>Focus mode is activated. No distractions, pure dedication to goals!</p>
+                    <p style="margin-top: 10px;">Focus mode is activated. No distractions, pure dedication to goals!</p>
                     <div class="quote-box">
                         <em>"From not talking for 4 weeks straight, we came to daily 10 mins. Something is better than nothing!"</em>
                     </div>
@@ -598,11 +410,10 @@
                 </div>
             </div>
 
-            <!-- TAB 3: SILENT ROOM CAFE PUZZLE -->
             <div id="tab-cafe-puzzle" class="tab-pane">
                 <div class="puzzle-wrapper">
                     <h2>☕ Public Cafe Noise Isolation Engine</h2>
-                    <p>People are shouting and talking around... Turn down the external noise slider to 0% to unlock the silent moment.</p>
+                    <p style="margin-top: 8px; color: var(--text-secondary);">People are shouting and talking around... Turn down the external noise slider to 0% to unlock the silent moment.</p>
                     
                     <div class="slider-box">
                         <label>External Cafe Noise: <span id="noiseDisplay">100%</span></label>
@@ -616,16 +427,15 @@
                     <div id="hugRewardBox" class="hug-reward-card hidden">
                         <div class="hug-icon">🤗</div>
                         <h3>[SYSTEM UNLOCKED: A Gentle But Tight Hug]</h3>
-                        <p>"Silent eyes, no words needed, looking at each other while the world fades away..."</p>
+                        <p style="margin-top: 8px; color: var(--text-primary); font-style: italic;">"Silent eyes, no words needed, looking at each other while the world fades away..."</p>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 4: CHEESY RAP & LYRICS -->
             <div id="tab-rap-vault" class="tab-pane">
                 <div class="lyrics-card">
                     <span class="badge-tag">A Classical Dancer & A Writer</span>
-                    <h2>A Dancer's Rhythm in a Writer's Ink</h2>
+                    <h2 style="margin-top: 12px; color: var(--primary-neon);">A Dancer's Rhythm in a Writer's Ink</h2>
                     <div class="lyrics-body">
                         <p><strong>(Verse 1)</strong><br>
                         Writing this down 'cause our journey just started,<br>
@@ -634,13 +444,13 @@
                         Matching our souls like a rhythm and rhyme.<br>
                         You express with your grace, I express with my pen,<br>
                         Names linked by fate, yeah, again and again.</p>
-
+                        <br>
                         <p><strong>(Chorus)</strong><br>
                         Let the whole world burn, just don't turn away,<br>
                         Need your sweet texts, never leave me on dry, okay?<br>
                         I won't stop flirting, you keep teasing my heart,<br>
                         Who cares if we're young? We're a work of pure art.</p>
-
+                        <br>
                         <p><strong>(Verse 2)</strong><br>
                         No pressure on us, keep the laughter alive,<br>
                         It’s that cute little attitude that helps me survive.<br>
@@ -652,11 +462,10 @@
                 </div>
             </div>
 
-            <!-- TAB 5: UNBREAKABLE LOYALTY -->
             <div id="tab-loyalty" class="tab-pane">
                 <div class="break-info-card">
                     <h2>🔒 Unbreakable Loyalty & Trust Status</h2>
-                    <p>Letter Statement: "Will u trust me let the world burn away..."</p>
+                    <p style="margin-top: 10px;">Letter Statement: "Will u trust me let the world burn away..."</p>
                     <div class="quote-box">
                         <em>"No backstabbers, no drama. Pure trust, high goals, and zero pressure."</em>
                     </div>
@@ -668,10 +477,8 @@
         </main>
     </div>
 
-    <!-- JAVASCRIPT ENGINE -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // 1. Matrix Background Canvas Rain Engine
             const canvas = document.getElementById('matrixCanvas');
             const ctx = canvas.getContext('2d');
 
@@ -705,7 +512,6 @@
             }
             setInterval(drawMatrix, 33);
 
-            // 2. Theme Toggle Controller
             const themeBtn = document.getElementById('themeToggleBtn');
             themeBtn.addEventListener('click', () => {
                 document.body.classList.toggle('light-pastel-theme');
@@ -714,7 +520,6 @@
                     : 'THEME: CHILL NEON';
             });
 
-            // 3. Vault Passcode Authentication System
             const unlockBtn = document.getElementById('unlockBtn');
             const passcodeVal = document.getElementById('vaultPasscode');
             const authCard = document.getElementById('authGateway');
@@ -737,7 +542,6 @@
                 if (e.key === 'Enter') checkPasscode();
             });
 
-            // 4. Tab Switcher Architecture
             const tabBtns = document.querySelectorAll('.tab-btn');
             const tabPanes = document.querySelectorAll('.tab-pane');
 
@@ -750,7 +554,6 @@
                 });
             });
 
-            // 5. Dynamic Chatter Terminal Log Output
             function initializeByeLogs() {
                 const consoleBox = document.getElementById('chatConsole');
                 const logs = [
@@ -787,7 +590,6 @@
                 });
             }
 
-            // 6. Interactive Noise Slider Puzzle Mechanics
             const noiseSlider = document.getElementById('noiseSlider');
             const noiseDisplay = document.getElementById('noiseDisplay');
             const envStatus = document.getElementById('cafeEnvStatus');
@@ -815,7 +617,3 @@
     </script>
 </body>
 </html>
-
-
-
-   
